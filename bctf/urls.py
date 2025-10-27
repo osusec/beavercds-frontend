@@ -1,5 +1,5 @@
 """
-URL configuration for rng project.
+URL configuration for bctf project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.0/topics/http/urls/
@@ -30,7 +30,7 @@ reset/done/ [name='password_reset_complete']
 '''
 
 urlpatterns = [
-    path ('', FrontPage, name='rng-home'),
+    path ('', FrontPage, name='bctf-home'),
     path ('admin/', admin.site.urls),
     path ('scores/', Scores, name='scoreboard'),
     path ('profile/', include ('account.urls')),
