@@ -1,0 +1,49 @@
+// TODO: remove this file
+[
+{
+    "id": "challenge_001",
+    "name": "container_escape",
+    "author": "Alice Builder",
+    "category": "cloud",
+    "description": "medium",
+    "min_points": 100,
+    "max_points": 400,
+    "flag": "k8s_breakout_ftw",
+    "files": [
+        "container.yaml",
+        "README.md",
+        "exploit.py"
+    ]
+},
+{
+    "id": "challenge_002",
+    "name": "hidden_secrets",
+    "author": "Bob Hacker",
+    "category": "forensics",
+    "description": "small",
+    "min_points": 50,
+    "max_points": 250,
+    "flag": "strings_are_fun",
+    "files": [
+        "memory.dump",
+        "notes.txt",
+        "analyze.sh"
+    ]
+},
+{
+    "id": "challenge_id",
+    "name": "challenge_one",
+    "author": "John Author",
+    "category": "misc",
+    "description": "big",
+    "min_points": 50,
+    "max_points": 500,
+    "flag": "i_luv_k8s",
+    "files":
+    [
+        "link1",
+        "link2",
+        "link3"
+    ]
+}
+]

@@ -35,6 +35,6 @@ urlpatterns = [
     path ('scores/', Scores, name='scoreboard'),
     path ('profile/', include ('account.urls')),
     path ('profile/', include ('django.contrib.auth.urls')),
-    path ('chals/', include ('chals.urls')),
+    path ('chals/', include ('chals.urls')), # state resolver here
     #path ('admin/challs/', ""),
 ]
