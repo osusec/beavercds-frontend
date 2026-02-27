@@ -36,5 +36,7 @@ urlpatterns = [
     path ('profile/', include ('account.urls')),
     path ('profile/', include ('django.contrib.auth.urls')),
     path ('chals/', include ('chals.urls')), # state resolver here
-    #path ('admin/challs/', ""),
+    # API endpoints below
+    path ('api/checkaccess/', CheckAccess, name='check-access'),
+    path ('api/resolvestate/', ResolveState, name='resolve-state'),
 ]
