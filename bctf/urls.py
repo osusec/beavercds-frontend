@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from .views import *
+from django.views.decorators.csrf import csrf_exempt
 
 '''django.contrib.auth.urls
 login/ [name='login']
@@ -38,5 +39,5 @@ urlpatterns = [
     path ('chals/', include ('chals.urls')), # state resolver here
     # API endpoints below
     path ('api/checkaccess/', CheckAccess, name='check-access'),
-    path ('api/resolvestate/', ResolveState, name='resolve-state'),
+    path ('api/resolvestate/', csrf_exempt(ResolveState.as_view()), name='resolve-state'), # TODO: DO NOT CSRF_EXEMPT :)
 ]
