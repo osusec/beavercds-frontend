@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from chals.models import Challenge, ChallengeFile, ChallengeSolve
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
 from django.db import transaction
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views import View
@@ -25,7 +25,10 @@ def CheckAccess (request):
 
 class ResolveState(View):
     def post (self, request):
-        new_json_state = json.loads(request.body.decode('utf-8'))
+        try:
+            new_json_state = json.loads(request.body.decode('utf-8'))
+        except json.decoder.JSONDecodeError:
+            return HttpResponseBadRequest("Missing or bad JSON provided.")
         # Check that all ids are unique and that all fields are present
         # If not, fail early
         if not _check_unique_ids(new_json_state):
@@ -104,10 +107,10 @@ class ResolveState(View):
                 removed_state.append(chal_id)
         # end: with transaction.atomic()
 
-        return HttpResponse(json.dumps({"current": result_state, "removed": removed_state}))
+        return JsonResponse({"current": result_state, "removed": removed_state})
 
     # def get (self, request):
-    #     pass # This is for giving the CSRF token
+    #     pass # TODO: This is for giving the CSRF token
 
 
 def _check_unique_ids (new_chal_state):
