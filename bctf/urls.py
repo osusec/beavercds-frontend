@@ -18,26 +18,18 @@ from django.contrib import admin
 from django.urls import path, include
 from .views import *
 from django.views.decorators.csrf import csrf_exempt
+from account.views import oauth_step2
 
-'''django.contrib.auth.urls
-login/ [name='login']
-logout/ [name='logout']
-password_change/ [name='password_change']
-password_change/done/ [name='password_change_done']
-password_reset/ [name='password_reset']
-password_reset/done/ [name='password_reset_done']
-reset/<uidb64>/<token>/ [name='password_reset_confirm']
-reset/done/ [name='password_reset_complete']
-'''
 
 urlpatterns = [
     path ('', FrontPage, name='bctf-home'),
     path ('admin/', admin.site.urls),
     path ('scores/', Scores, name='scoreboard'),
-    path ('profile/', include ('account.urls')),
-    path ('profile/', include ('django.contrib.auth.urls')),
-    path ('chals/', include ('chals.urls')), # state resolver here
+    path ('account/', include ('account.urls')),
+    path ('chals/', include ('chals.urls')),
     # API endpoints below
     path ('api/checkaccess/', CheckAccess, name='check-access'),
     path ('api/resolvestate/', csrf_exempt(ResolveState.as_view()), name='resolve-state'), # TODO: DO NOT CSRF_EXEMPT :)
+    # TODO: hardcoded for ctftime for now:
+    path ('integrations/ctftime/callback', oauth_step2, name='oauth-step2'),
 ]

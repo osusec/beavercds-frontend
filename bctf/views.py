@@ -8,7 +8,11 @@ import json
 
 
 def FrontPage (request):
-    return render (request, "index.html", {'the': 'Hewwo'})
+    try:
+        team_name = request.user.team_name
+    except:
+        team_name = "anonymous" # TODO: ?
+    return render (request, "index.html", {'the': 'Hewwo', 'user': team_name})
 
 def Scores (request):
     pass 
@@ -40,6 +44,7 @@ class ResolveState(View):
         removed_state = []
 
         # Begin changing state
+        # TODO: not sure if this is the correct process for collecting locks
         with transaction.atomic():
             # Set all current state to inactive.
             # Requisite challenges will be reactivated when we loop over the new state.

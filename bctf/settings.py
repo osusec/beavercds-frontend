@@ -25,7 +25,8 @@ SECRET_KEY = 'django-insecure-)b05ld_ymfxfl(yh-%8oa)0ct9*7bvorsg*7*@2_h%v#3-!6@8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['damctf.xyz', 'localhost', '10.0.0.240']
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 
 # Application definition
@@ -52,6 +53,35 @@ MIDDLEWARE = [
 ]
 
 AUTH_USER_MODEL = "account.CTFTeam"
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "account.backends.CTFTime_OAuth_Backend"
+]
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
+
+with open ('CTFTIME_OAUTH_CLIENTID', 'r') as f:
+    CTFTIME_OAUTH_CLIENTID = f.read().rstrip()
+with open('CTFTIME_OAUTH_CLIENTSECRET', 'r') as f:
+    CTFTIME_OAUTH_CLIENTSECRET = f.read().rstrip()
+
+from authlib.integrations.django_client import OAuth
+OAUTH = OAuth()
+OAUTH.register(
+    name='ctftime',
+    client_id=CTFTIME_OAUTH_CLIENTID,
+    client_secret=CTFTIME_OAUTH_CLIENTSECRET,
+    access_token_url='https://oauth.ctftime.org/token',
+    access_token_params=None,
+    authorize_url='https://oauth.ctftime.org/authorize',
+    authorize_params=None,
+    api_base_url='https://oauth.ctftime.org/user',
+    client_kwargs={'scope': 'profile team'},
+    token_endpoint_auth_method='client_secret_post'
+)
 
 ROOT_URLCONF = 'bctf.urls'
 
@@ -105,6 +135,15 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
+]
+
+# TODO: use only Argon?
+PASSWORD_HASHERS = [
+    "django.contrib.auth.hashers.Argon2PasswordHasher",
+    "django.contrib.auth.hashers.PBKDF2PasswordHasher",
+    "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
+    "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
+    "django.contrib.auth.hashers.ScryptPasswordHasher",
 ]
 
 
