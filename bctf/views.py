@@ -44,8 +44,11 @@ class ResolveState(View):
         removed_state = []
 
         # Begin changing state
-        # TODO: not sure if this is the correct process for collecting locks
         with transaction.atomic():
+            # Lock the ChallengeSolve table
+            for i in ChallengeSolve.objects.select_for_update().all():
+                break
+
             # Set all current state to inactive.
             # Requisite challenges will be reactivated when we loop over the new state.
             # Challenges that were deployed but no longer, will remain inactive.

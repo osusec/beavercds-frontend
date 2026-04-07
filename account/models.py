@@ -34,7 +34,7 @@ class CTFTime_Team (models.Model):
 
 class CTFTeam_LongtermTokens (models.Model):
     team = models.ForeignKey(CTFTeam, on_delete=models.CASCADE)
-    token = models.TextField() # Base64
+    token = models.TextField() # Base64 TODO: unique
 
 '''
 - CTFTime (oauth through individual user)
