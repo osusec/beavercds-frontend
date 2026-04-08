@@ -56,7 +56,8 @@ AUTH_USER_MODEL = "account.CTFTeam"
 
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
-    "account.backends.CTFTime_OAuth_Backend"
+    "account.backends.CTFTime_OAuth_Backend",
+    "account.backends.Token_Backend"
 ]
 
 LOGIN_REDIRECT_URL = '/'
@@ -142,6 +143,8 @@ PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.ScryptPasswordHasher",
     "django.contrib.auth.hashers.PBKDF2PasswordHasher",
 ]
+
+TOKEN_LENGTH = 64
 
 
 # Internationalization

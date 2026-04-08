@@ -22,7 +22,9 @@ urlpatterns = [
     path ('profile/', login_required(ProfilePage), name='profile-home'),
     path ('register/', SignUpView.as_view(), name='profile-signup'),
     path ('oauth/', oauth_step1, name='oauth-step1'),
-    #path ('token/', token_auth, name='token_auth'),
+    path ('token/', TokenAuth.as_view(), name='token_auth'),
+    path ('token/create', CreateToken.as_view(), name='create_token'),
+    path ('token/delete', DeleteToken.as_view(), name='delete_token'),
     path ('', include ('django.contrib.auth.urls')),
     #path ('ctftime/callback', auth, name='auth') # TODO
 ]

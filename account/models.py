@@ -5,6 +5,8 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AbstractUser
 from .managers import CTFTeamManager
 
+from bctf.settings import TOKEN_LENGTH
+
 # Create your models here.
 
 class CTFTeam (AbstractBaseUser, PermissionsMixin):
@@ -34,7 +36,7 @@ class CTFTime_Team (models.Model):
 
 class CTFTeam_LongtermTokens (models.Model):
     team = models.ForeignKey(CTFTeam, on_delete=models.CASCADE)
-    token = models.TextField() # Base64 TODO: unique
+    token = models.CharField(primary_key=True, max_length=2*TOKEN_LENGTH) # Base64
 
 '''
 - CTFTime (oauth through individual user)

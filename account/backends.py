@@ -1,5 +1,5 @@
 from django.contrib.auth.backends import BaseBackend
-from .models import CTFTime_Team, CTFTeam_ContactEmails, CTFTeam
+from .models import CTFTime_Team, CTFTeam_ContactEmails, CTFTeam, CTFTeam_LongtermTokens
 from django.http import HttpResponseServerError
 import requests
 
@@ -70,4 +70,18 @@ class CTFTime_OAuth_Backend (BaseBackend):
         except CTFTeam.DoesNotExist:
             return None
 
-# TODO: add token authentication
+
+class Token_Backend (BaseBackend):
+    def authenticate (self, request, token=None):
+        try:
+            team_token_obj = CTFTeam_LongtermTokens.objects.get(pk=token)
+            return team_token_obj.team
+        except CTFTeam_LongtermTokens.DoesNotExist:
+            return None
+
+
+    def get_user (self, team_name):
+        try:
+            return CTFTeam.objects.get(pk=team_name)
+        except CTFTeam.DoesNotExist:
+            return None
