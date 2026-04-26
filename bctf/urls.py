@@ -18,18 +18,18 @@ from django.contrib import admin
 from django.urls import path, include
 from .views import *
 from django.views.decorators.csrf import csrf_exempt
-from account.views import oauth_step2
+from account.views import OAuth_Step2
 
 
 urlpatterns = [
-    path ('', FrontPage, name='bctf-home'),
+    path ('', FrontPage.as_view(), name='bctf-home'),
     path ('admin/', admin.site.urls),
-    path ('scores/', Scores, name='scoreboard'),
+    path ('scores/', Scores.as_view(), name='scoreboard'),
     path ('account/', include ('account.urls')),
     path ('chals/', include ('chals.urls')),
     # API endpoints below
-    path ('api/checkaccess/', CheckAccess, name='check-access'),
+    path ('api/checkaccess/', CheckAccess.as_view(), name='check-access'),
     path ('api/resolvestate/', csrf_exempt(ResolveState.as_view()), name='resolve-state'), # TODO: DO NOT CSRF_EXEMPT :)
     # TODO: hardcoded for ctftime for now:
-    path ('integrations/ctftime/callback', oauth_step2, name='oauth-step2'),
+    path ('integrations/ctftime/callback', OAuth_Step2.as_view(), name='oauth-step2'),
 ]

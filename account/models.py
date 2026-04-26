@@ -15,7 +15,7 @@ class CTFTeam (AbstractBaseUser, PermissionsMixin):
     team_name = models.CharField (primary_key=True, max_length=128)
     ctftime_bool = models.BooleanField()
     username = None
-    is_admin = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False) # TODO admin panel please
 
     USERNAME_FIELD = 'team_name'
     REQUIRED_FIELDS = []

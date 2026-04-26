@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+from django.urls import reverse_lazy
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +26,7 @@ SECRET_KEY = 'django-insecure-)b05ld_ymfxfl(yh-%8oa)0ct9*7bvorsg*7*@2_h%v#3-!6@8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['damctf.xyz', 'localhost', '10.0.0.240']
+ALLOWED_HOSTS = ['damctf.xyz', 'localhost', '127.0.0.1', '10.0.0.240']
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 
@@ -60,6 +61,7 @@ AUTHENTICATION_BACKENDS = [
     "account.backends.Token_Backend"
 ]
 
+LOGIN_URL = reverse_lazy('login')
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
@@ -97,6 +99,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'bctf.context_processors.ctf_event'
             ],
         },
     },
@@ -168,3 +171,8 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+CTF_EVENT_NAME = 'DamCTF 2026'
+CTF_EVENT_DATE = '9 May 2026 00:00 UTC - 11 May 2026 00:00 UTC'
+CTF_CTFTIME_LINK = 'https://ctftime.org/event/3124/'

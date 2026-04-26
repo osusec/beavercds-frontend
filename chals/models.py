@@ -24,5 +24,6 @@ class ChallengeFile (models.Model):
 class ChallengeSolve (models.Model):
     challenge = models.ForeignKey (Challenge, on_delete=models.CASCADE) # only done when not active
     team = models.ForeignKey (CTFTeam, on_delete=models.CASCADE)
+    time_of_solve = models.DateTimeField(auto_now_add=True)
 
 

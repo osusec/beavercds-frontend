@@ -1,14 +1,27 @@
 {% extends 'base.html' %}
 
-{% block title %}Login{% endblock %}
+{% block title %}Login | {{ event_name }}{% endblock %}
 
 {% block content %}
-<h2>Log In</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Log In</button>
-</form>
 
-<a href="{% url 'oauth-step1' %}">Click here to login with CTFTime</a>
+    <h2 class="mb-4 my-3">Login</h2>
+    <div>
+        <form method="post" action="{% url 'login' %}" class="d-flex flex-column mb-4">
+            {% csrf_token %}
+            <div class="input-group my-1">
+                <input type="text" class="form-control border-secondary" name="username" placeholder="Team name" autofocus="" autocapitalize="none" autocomplete="username" maxlength="128" required="">
+            </div>
+            <div class="input-group my-1">
+                <input type="password" class="form-control border-secondary" name="password" placeholder="Password" autocomplete="current-password" required="">
+            </div>
+            <button class="btn btn-outline-secondary my-1" type="submit">Login</button>
+        </form>
+
+        <div class="d-flex flex-column">
+            <a href="{% url 'oauth-step1' %}" class="btn btn-outline-secondary my-1" type="button">Login with CTFtime</a>
+
+            <a href="{% url 'profile-signup' %}" class="btn btn-outline-secondary my-1" type="button">Register</a>
+        </div>
+    </div>
+
 {% endblock %}

@@ -1,16 +1,31 @@
 {% extends 'base.html' %}
 
-{% block title %}{{the}}{% endblock %}
+{% block title %}{{ event_name }}{% endblock %}
 
 {% block content %}
 
-<div class="container-fluid">
-
-    <!-- subheader -->
-    <div class="row mb-4 my-3">
-        <h2 class="col">{{the}}</h2>
-    </div>
-
-</div>
+<!-- <div class="d-flex flex-column align-items-center"> -->
+    <h1 class="mb-4 my-3">{{ event_name }}</h1>
+    <p>{{ event_date }}</p>
+    <a class="mb-4 my-3" href="{{ ctftime_link }}" rel="me noopener" title="CTFTime">
+        <svg width="126.56" height="24" version="1.1" viewBox="0 0 126.56 24" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+        <style type="text/css">
+            .st0{fill:#E3000B;}
+            .st1{fill:#FFFFFF;}
+        </style>
+        <g transform="translate(-61.92 -20.73)">
+            
+            <polygon class="st1" transform="matrix(.64533 0 0 .64533 21.961 7.3522)" points="74.06 51.68 74.06 51.68 69.3 51.68 69.3 27.9 74.06 27.9 74.06 27.9 80.47 27.9 80.47 21.02 61.92 21.02 61.92 57.92 80.47 57.92 80.47 51.68"/>
+            <polygon class="st1" transform="matrix(.64533 0 0 .64533 21.961 7.3522)" points="98.98 57.92 98.98 28.11 104.25 28.11 104.25 21.02 86.32 21.02 86.32 28.11 91.6 28.11 91.6 57.92"/>
+            <polygon class="st1" transform="matrix(.64533 0 0 .64533 21.961 7.3522)" points="126.9 42.88 126.9 37.15 117.69 37.15 117.69 27.9 129.02 27.9 129.02 21.02 110.3 20.73 110.3 57.63 117.69 57.63 117.69 42.88"/>
+            <polygon class="st1" transform="matrix(.64533 0 0 .64533 21.961 7.3522)" points="192.76 57.92 192.76 25.34 198.29 25.34 198.29 21.02 182.79 21.02 182.79 25.34 188.33 25.34 188.33 57.92"/>
+            <rect class="st1" x="153.16" y="20.917" width="2.8588" height="23.813" stroke-width=".64534"/>
+            <polygon class="st1" transform="matrix(.64533 0 0 .64533 21.961 7.3522)" points="214.52 57.92 218.89 57.92 218.89 31.78 224.16 45.06 229.43 31.78 229.43 57.92 233.81 57.92 233.81 21.02 229.43 21.02 224.16 34.52 218.89 21.02 214.52 21.02"/>
+            <polygon class="st1" transform="matrix(.64533 0 0 .64533 21.961 7.3522)" points="252.15 37.26 244.77 37.26 244.77 25.34 256.88 25.34 258.04 21.02 240.34 21.02 240.34 57.92 257.85 57.92 256.69 53.6 244.77 53.6 244.77 41.58 252.15 41.58"/>
+            <path class="st1" d="m109.43 20.917v23.813h25.621v-23.813zm7.8096 3.2468h14.32v17.321h-18.63v-17.075l8.3566 8.3566-3.9426 3.9363 2.6002 2.304 6.0727-6.0664z" stroke-width=".64534"/>
+        </g>
+        </svg>
+    </a>
+<!-- </div> -->
 
 {% endblock %}

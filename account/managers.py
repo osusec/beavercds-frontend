@@ -23,7 +23,7 @@ class CTFTeamManager(BaseUserManager):
 
     def create_superuser (self, team_name, password=None, ctftime_bool=False):
         new_team  = self._create (team_name, password, ctftime_bool)
-        new_team.is_admin = True
+        new_team.is_staff = True
         new_team.save(using=self._db)
         return new_team
 

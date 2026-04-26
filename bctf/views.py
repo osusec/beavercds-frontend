@@ -7,24 +7,30 @@ from django.views import View
 import json
 
 
-def FrontPage (request):
-    try:
-        team_name = request.user.team_name
-    except:
-        team_name = "anonymous" # TODO: ?
-    return render (request, "index.html", {'the': 'Hewwo', 'user': team_name})
+class FrontPage (View):
+    def get (self, request):
+        return render (request, "index.html")
 
-def Scores (request):
-    pass 
+
+class Scores (View):
+    def get (self, request):
+        fake_data = [
+            {'place': '1',
+             'team_name': 'alienfoetus',
+             'points': '50'}
+        ]
+
+        return render (request, "scoreboard.html", {'scores': fake_data})
 
 
 # API endpoints below
 
-def CheckAccess (request):
-    response_obj = {"status":"ok"}
-    if request.user.is_authenticated:
-        response_obj["user"] = request.user.get_username()
-    return HttpResponse(json.dumps(response_obj))
+class CheckAccess (View):
+    def get (self, request):
+        response_obj = {"status":"ok"}
+        if request.user.is_authenticated:
+            response_obj["user"] = request.user.get_username()
+        return HttpResponse(json.dumps(response_obj))
 
 
 class ResolveState(View):

@@ -19,12 +19,14 @@ reset/done/ [name='password_reset_complete']
 '''
 
 urlpatterns = [
-    path ('profile/', login_required(ProfilePage), name='profile-home'),
+    path ('profile/', ProfilePage.as_view(), name='profile-home'),
     path ('register/', SignUpView.as_view(), name='profile-signup'),
-    path ('oauth/', oauth_step1, name='oauth-step1'),
+    path ('oauth/', OAuth_Step1.as_view(), name='oauth-step1'),
     path ('token/', TokenAuth.as_view(), name='token_auth'),
-    path ('token/create', CreateToken.as_view(), name='create_token'),
+    path ('token/create', CreateToken.as_view(), name='create_token'), # TODO: perms
     path ('token/delete', DeleteToken.as_view(), name='delete_token'),
+    path ('email/create', AddContactEmail.as_view(), name='create_email'),
+    path ('email/delete', DeleteContactEmail.as_view(), name='delete_email'),
     path ('', include ('django.contrib.auth.urls')),
     #path ('ctftime/callback', auth, name='auth') # TODO
 ]
