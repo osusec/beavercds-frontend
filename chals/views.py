@@ -2,22 +2,33 @@ from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import *
-from django.db.models import Exists, OuterRef
+from django.db.models import Exists, OuterRef, F, Max, Case, When, Count
 from .forms import SubmitFlagForm
 from django.urls import reverse_lazy
+from bctf.settings import THRESHOLD_SOLVES
 
 class ListChal (LoginRequiredMixin, View):
     def get (self, request):
         team = request.user
         category = request.GET.get('category')
 
+        # TODO: most disgusting code ever written
         chals = (Challenge.objects
             .filter(active=True)
             .annotate (solved=Exists(
                 ChallengeSolve.objects
                 .filter(challenge=OuterRef('pk'), team=team)
             ))
+            .annotate (num_solves=Count('challengesolve'))
+            .annotate (current_points_value=(
+                ((F('min_points')-F('max_points'))*(F('num_solves')**2)/(THRESHOLD_SOLVES**2))+F('max_points')
+            ))
+            .annotate (current_points_value=Case(
+                When(current_points_value__lte=F('min_points'), then=F('min_points')),
+                default=F('current_points_value')
+            ))
         )
+
         if category:
             chals = chals.filter(category=category)
 

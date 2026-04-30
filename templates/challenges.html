@@ -15,9 +15,8 @@
         {% for challenge in chals %}
             <div class="d-flex flex-column align-items-center mb-4 p-4 border {% if challenge.solved %}border-success{% else %}border-secondary{% endif %}">
                 <div class="w-100 d-flex flex-row align-items-center justify-content-end">
-                    <h3 class="flex-grow-1">{{ challenge.name }}</h3>
-                    <!-- TODO: calculate actual points -->
-                    <h3>{{ challenge.max_points }}</h3>
+                    <h3 class="flex-grow-1 mb-4">{{ challenge.name }}</h3>
+                    <h3>{{ challenge.current_points_value }}</h3>
                 </div>
                 <div class="w-100 d-flex flex-row align-items-center justify-content-end text-secondary">
                     <p class="flex-grow-1">{{ challenge.author }}</p>
@@ -28,10 +27,11 @@
                     <p>{{ challenge.description }}</p>
                 </div>
 
+                <!-- TODO add file links -->
+
                 {% if not challenge.solved %}
                 <form method="post" action="{% url 'submit-flag' %}">
                     {% csrf_token %}
-                    <!-- TODO: is the below "value" encoded correctly? -->
                     <input type="hidden" name="challenge" value="{{ challenge.chal_id }}">
                     <div class="input-group">
                         <input type="text" class="form-control border-secondary mx-1" name="submitted_flag" placeholder="Flag">
@@ -44,12 +44,3 @@
     </div>
 
 {% endblock %}
-
-
-{% for field in form %}
-            <div class="input-group">
-                <span class="input-group-addon" style="background-color:#b77b48; color:white"><span class="glyphicon glyphicon-user"></span></span>
-                <input class="form-control" id="{{ field.id_for_label }}" maxlength="30" name="{{ field.html_name }}" value="{{ field.value }}" type="text" /> 
-                {{ field.errors }}
-            </div>
-        {% endfor %}

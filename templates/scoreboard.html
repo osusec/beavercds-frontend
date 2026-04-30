@@ -17,7 +17,7 @@
             <tbody>
                 {% for entry in scores %}
                     <tr>
-                        <td>{{ entry.place }}</td>
+                        <td>{{ entry.place }} </td>
                         <td><span>{{ entry.team_name }}</span>
                             {% if ctftime %} 
                                 <svg width="24" height="24" version="1.1" viewBox="0 0 24 24" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
@@ -31,7 +31,7 @@
                                 </svg>
                             {% endif %}
                         </td>
-                        <td>{{ entry.points }}</td>
+                        <td>{{ entry.sum_points }}</td>
                     </tr>
                 {% endfor %}
             </tbody>

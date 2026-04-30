@@ -62,7 +62,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 LOGIN_URL = reverse_lazy('login')
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = reverse_lazy('profile-home')
 LOGOUT_REDIRECT_URL = '/'
 
 
@@ -176,3 +176,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CTF_EVENT_NAME = 'DamCTF 2026'
 CTF_EVENT_DATE = '9 May 2026 00:00 UTC - 11 May 2026 00:00 UTC'
 CTF_CTFTIME_LINK = 'https://ctftime.org/event/3124/'
+THRESHOLD_SOLVES = 5

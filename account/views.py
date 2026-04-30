@@ -57,7 +57,6 @@ class OAuth_Step2 (View):
             return redirect(reverse_lazy('login'))
 
         login(request, authed_team)
-        print(f'Logged in team {authed_team.team_name} by CTFTime')
         return redirect(LOGIN_REDIRECT_URL)
 
 
@@ -73,17 +72,15 @@ class TokenAuth (View):
             return redirect(reverse_lazy('login'))
         
         login (request, authed_team)
-        print(f'Logged in team {authed_team.team_name} by token')
-        return authed_team
+        return redirect(LOGIN_REDIRECT_URL)
 
 
 class CreateToken (LoginRequiredMixin, View):
     def post (self, request):
         team = request.user
 
-        # TODO why not
-        # Only have one token at a time
-        if CTFTeam_LongtermTokens.objects.filter(team=team).exists():
+        # Don't have too many active tokens at a time
+        if CTFTeam_LongtermTokens.objects.filter(team=team).count() >= 4:
             # TODO: return errors
             return redirect(reverse_lazy('profile-home'))
 
@@ -115,6 +112,7 @@ class DeleteToken (LoginRequiredMixin, View):
 
         return redirect(reverse_lazy('profile-home'))
 
+
 class AddContactEmail (LoginRequiredMixin, View):
     def post (self, request):
         team = request.user
@@ -126,6 +124,7 @@ class AddContactEmail (LoginRequiredMixin, View):
             new_email.save()
 
         return redirect(reverse_lazy('profile-home'))
+
 
 class DeleteContactEmail (LoginRequiredMixin, View):
     def post (self, request):

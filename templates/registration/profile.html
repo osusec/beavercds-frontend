@@ -18,12 +18,12 @@
         {% endif %}
     </h2>
     <div class="container d-flex flex-column mb-4 p-2">
-        <h3>Access Links</h3>
+        <h3 class="mb-4">Access Links</h3>
         <p>Give a login link to your team for quick access.</p>
 
         {% for token in access_tokens %}
             <div class="input-group mb-2">
-                <input type="text" id="link_{{ token.pk }}" class="form-control border-secondary mx-1" name="submitted_flag" placeholder="Link" value="{{ request.scheme }}://{{ request.get_host }}{% url 'token_auth' %}{{token.token}}">
+                <input type="text" id="link_{{ token.pk }}" class="form-control border-secondary mx-1" name="submitted_flag" placeholder="Link" value="{{ request.scheme }}://{{ request.get_host }}{% url 'token_auth' %}{% querystring token=token.token %}">
                 <!-- TODO: remove inline script -->
                  <!-- TODO: add interaction response -->
                 <button class="btn btn-outline-secondary mx-1" type="button" onclick="navigator.clipboard.writeText(getElementById('link_{{ token.pk }}').value)">Copy</button>
@@ -39,12 +39,13 @@
             <form id="create_token" method="post" action="{% url 'create_token' %}" hidden>
                 {% csrf_token %}
             </form>
-            <button class="btn btn-outline-secondary w-100" form="create_token" type="submit">Create Link</button>
+            <button class="btn btn-outline-secondary w-100" form="create_token" type="submit" {% if access_tokens.count >= 4 %}disabled=""{% endif %}>Create Link</button>
+            <!-- Tool tips? -->
         </div>
     </div>
 
     <div class="container d-flex flex-column my-4 p-2">
-        <h3>Contact Emails</h3>
+        <h3 class="mb-4">Contact Emails</h3>
         <!-- TODO: make mandatory at team registration -->
         <p>Add at least one contact email so that we can get in touch for prizes.</p>
 
@@ -70,7 +71,7 @@
     </div>
 
     <div class="container d-flex flex-column mt-4 p-2">
-        <a href="{% url 'chals-list' %}" class=" text-decoration-none text-reset"><h3>Solve History</h3></a>
+        <a href="{% url 'chals-list' %}" class=" text-decoration-none text-reset"><h3 class="mb-4">Solve History</h3></a>
 
         {% for solve in solves %}
         <!-- TODO: add timezone information -->

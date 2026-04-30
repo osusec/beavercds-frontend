@@ -1,11 +1,17 @@
 // TODO: remove this file
+
+POST /api/resolvestate/ HTTP/1.1
+Host: 127.0.0.1:8000
+Content-Type: application/json
+Content-Length: 958
+
 [
 {
     "id": "challenge_001",
     "name": "container_escape",
     "author": "Alice Builder",
     "category": "cloud",
-    "description": "medium",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc convallis felis a velit euismod dignissim. Integer non purus leo. Quisque ut nulla massa. Vestibulum malesuada, metus at tincidunt faucibus, mi turpis rutrum lacus, non rutrum lacus felis eu nulla. Curabitur id sollicitudin enim. Vivamus at efficitur lacus. Curabitur quis ante vel eros dapibus sollicitudin nec ac tellus. Aliquam commodo lobortis consectetur. Proin sed suscipit quam. ",
     "min_points": 100,
     "max_points": 400,
     "flag": "k8s_breakout_ftw",
@@ -35,7 +41,7 @@
     "name": "challenge_one",
     "author": "John Author",
     "category": "misc",
-    "description": "big",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc convallis felis a velit euismod dignissim. Integer non purus leo. Quisque ut nulla massa. Vestibulum malesuada, metus at tincidunt faucibus, mi turpis rutrum lacus, non rutrum lacus felis eu nulla. Curabitur id sollicitudin enim. Vivamus at efficitur lacus. Curabitur quis ante vel eros dapibus sollicitudin nec ac tellus. Aliquam commodo lobortis consectetur. Proin sed suscipit quam. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc convallis felis a velit euismod dignissim. Integer non purus leo. Quisque ut nulla massa. Vestibulum malesuada, metus at tincidunt faucibus, mi turpis rutrum lacus, non rutrum lacus felis eu nulla. Curabitur id sollicitudin enim. Vivamus at efficitur lacus. Curabitur quis ante vel eros dapibus sollicitudin nec ac tellus. Aliquam commodo lobortis consectetur. Proin sed suscipit quam. ",
     "min_points": 50,
     "max_points": 500,
     "flag": "i_luv_k8s",

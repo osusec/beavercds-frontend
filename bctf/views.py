@@ -1,10 +1,14 @@
 from django.shortcuts import render
-from chals.models import Challenge, ChallengeFile, ChallengeSolve
+from chals.models import *
+from account.models import *
+from django.db.models import Exists, OuterRef, Count, Sum, Window, F, Case, When, Subquery
+from django.db.models.functions import Rank
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
 from django.db import transaction
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views import View
 import json
+from bctf.settings import THRESHOLD_SOLVES
 
 
 class FrontPage (View):
@@ -14,13 +18,37 @@ class FrontPage (View):
 
 class Scores (View):
     def get (self, request):
-        fake_data = [
-            {'place': '1',
-             'team_name': 'alienfoetus',
-             'points': '50'}
-        ]
+        # TODO: most disgusting code ever written
+        solve_count_subq = (ChallengeSolve.objects
+            .filter(challenge=OuterRef('challengesolve__challenge__pk'))
+            .values('challenge')
+            .annotate(num_solves=Count('challenge'))
+            .values('num_solves')
+        )
 
-        return render (request, "scoreboard.html", {'scores': fake_data})
+        score_entries = (CTFTeam.objects
+            .annotate (sum_points=Sum(
+                Case(
+                    When(
+                        challengesolve__challenge__min_points__lte=(
+                            ((F('challengesolve__challenge__min_points')-F('challengesolve__challenge__max_points'))*(Subquery(solve_count_subq)**2)/(THRESHOLD_SOLVES**2))+F('challengesolve__challenge__max_points')
+                        ),
+                        then=(
+                            ((F('challengesolve__challenge__min_points')-F('challengesolve__challenge__max_points'))*(Subquery(solve_count_subq)**2)/(THRESHOLD_SOLVES**2))+F('challengesolve__challenge__max_points')
+                        )
+                    ),
+                    default=F('challengesolve__challenge__min_points')
+                ),
+                default=0
+            ))
+            .annotate(place=Window(
+                expression=Rank(),
+                order_by='-sum_points'
+            ))
+            .order_by('-sum_points')
+        )
+
+        return render (request, "scoreboard.html", {'scores': score_entries})
 
 
 # API endpoints below
@@ -151,3 +179,4 @@ def _check_complete_fields (new_chal_state):
             return False
     return True
 
+# TODO: make JSON scoreboard for ctftime
