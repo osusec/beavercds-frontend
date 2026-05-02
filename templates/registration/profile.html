@@ -38,8 +38,9 @@
             <form id="create_token" method="post" action="{% url 'create_token' %}" hidden>
                 {% csrf_token %}
             </form>
+            <div {% if access_tokens.count >= 4 %}data-bs-toggle="tooltip" data-bs-title="Only 4 access links can be active at once."{% endif %}>
             <button class="btn btn-outline-secondary w-100" form="create_token" type="submit" {% if access_tokens.count >= 4 %}disabled=""{% endif %}>Create Link</button>
-            <!-- TODO: Tool tips? -->
+            </div>
         </div>
     </div>
 
@@ -65,7 +66,6 @@
                 <button class="btn btn-outline-secondary mx-1" type="submit">Add</button>
             </div>
         </form>
-
     </div>
 
     <div class="container d-flex flex-column mt-4 p-2">
@@ -74,8 +74,7 @@
         {% for solve in solves %}
         <div class="container d-flex flex-row mx-1">
             <p class="flex-grow-1">{{ solve.challenge.name }} <span class="text-secondary">({{ solve.challenge.category }})</span></p>
-            <!-- TODO: full date on the tool tips -->
-            <p data-datetime="{{ solve.time_of_solve|date:'c' }}">{{ solve.time_of_solve|date:"D" }} {{ solve.time_of_solve|time:"g:i A e" }}</p>
+            <p data-datetime="{{ solve.time_of_solve|date:'c' }}" data-bs-toggle="tooltip" data-bs-title="{{ solve.time_of_solve|date:'M j, Y' }}">{{ solve.time_of_solve|date:"D" }} {{ solve.time_of_solve|time:"g:i A e" }}</p>
         </div>
         {% endfor %}
     </div>
