@@ -32,9 +32,11 @@ class ListChal (LoginRequiredMixin, View):
         if category:
             chals = chals.filter(category=category)
 
+        chals_with_files = [(chal, ChallengeFile.objects.filter(challenge=chal)) for chal in chals.order_by('solved')]
+
         categories = Challenge.objects.distinct('category')
 
-        return render (request, "challenges.html", {'chals': chals.order_by('solved'), 'categories': categories, 'submit_form': SubmitFlagForm})
+        return render (request, "challenges.html", {'chals': chals_with_files, 'categories': categories, 'submit_form': SubmitFlagForm})
 
 class SubmitFlag (LoginRequiredMixin, View):
     def post (self, request):

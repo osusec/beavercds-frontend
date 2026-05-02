@@ -12,7 +12,7 @@
         {% endfor %}
     </div>
     <div class="container">
-        {% for challenge in chals %}
+        {% for challenge, files in chals %}
             <div class="d-flex flex-column align-items-center mb-4 p-4 border {% if challenge.solved %}border-success{% else %}border-secondary{% endif %}">
                 <div class="w-100 d-flex flex-row align-items-center justify-content-end">
                     <h3 class="flex-grow-1 mb-4">{{ challenge.name }}</h3>
@@ -23,11 +23,17 @@
                     <p>{{ challenge.category }}</p>
                 </div>
 
+                <!-- TODO: is frontend or backend rendering the markdown? -->
+
                 <div class="w-100">
                     <p>{{ challenge.description }}</p>
                 </div>
 
-                <!-- TODO add file links -->
+                <div class="d-flex flex-row flex-wrap justify-content-center w-100 mb-3">
+                    {% for file in files %}
+                        <a href="{{ file.url }}" class="link-secondary link-underline-opacity-0 mx-4">{{ file.basename }}</a>
+                    {% endfor %}
+                </div>
 
                 {% if not challenge.solved %}
                 <form method="post" action="{% url 'submit-flag' %}">

@@ -134,6 +134,7 @@ class ResolveState(View):
                         chal_file = ChallengeFile(
                             challenge=chal,
                             url=file,
+                            # TODO: brittle
                             basename=file.split('/')[-1]
                         )
                         chal_file.save()
