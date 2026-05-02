@@ -24,9 +24,8 @@
         {% for token in access_tokens %}
             <div class="input-group mb-2">
                 <input type="text" id="link_{{ token.pk }}" class="form-control border-secondary mx-1" name="submitted_flag" placeholder="Link" value="{{ request.scheme }}://{{ request.get_host }}{% url 'token_auth' %}{% querystring token=token.token %}">
-                <!-- TODO: remove inline script -->
                  <!-- TODO: add interaction response -->
-                <button class="btn btn-outline-secondary mx-1" type="button" onclick="navigator.clipboard.writeText(getElementById('link_{{ token.pk }}').value)">Copy</button>
+                <button class="btn btn-outline-secondary mx-1 bcds-copy-btn" type="button" data-link-id="link_{{ token.pk }}" >Copy</button>
                 <form id="delete_{{ token.pk }}" method="post" action="{% url 'delete_token' %}" hidden>
                     {% csrf_token %}
                     <input type="hidden" name="token" value="{{ token.pk }}">

@@ -18,3 +18,5 @@ class TimezoneMiddleware:
             timezone.deactivate()
             
         return self.get_response(request)
+
+# TODO: Add middleware to gatekeep the competition dates
