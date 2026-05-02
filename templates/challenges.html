@@ -23,10 +23,9 @@
                     <p>{{ challenge.category }}</p>
                 </div>
 
-                <!-- TODO: is frontend or backend rendering the markdown? -->
-
                 <div class="w-100">
-                    <p>{{ challenge.description }}</p>
+                    {% load markdownify %}
+                    {{ challenge.description|markdownify }}
                 </div>
 
                 <div class="d-flex flex-row flex-wrap justify-content-center w-100 mb-3">

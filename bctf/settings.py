@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles', # TODO: punt this to the web server
+    'markdownify.apps.MarkdownifyConfig',
 ]
 
 MIDDLEWARE = [
@@ -105,6 +106,16 @@ TEMPLATES = [
         },
     },
 ]
+
+MARKDOWNIFY = {
+    "default": {
+        "WHITELIST_TAGS": ['p', 'code'],
+        "STRIP": True,
+        "LINKIFY_TEXT": {
+            "PARSE_URLS": False,
+        },
+    },
+}
 
 WSGI_APPLICATION = 'bctf.wsgi.application'
 
