@@ -5,7 +5,7 @@
 {% block content %}
 
     <h1 class="mb-4 my-3">{{ event_name }}</h1>
-    <p>{{ event_date }}</p>
+    <p class="text-center">{{ event_start|date:"M j, Y" }} {{ event_start|time:"H:i e" }} – {{ event_end|date:"M j, Y" }} {{ event_end|time:"H:i e" }}</p>
     <a class="mb-4 my-3" href="{{ ctftime_link }}" rel="me noopener" title="CTFTime">
         <svg width="126.56" height="24" version="1.1" viewBox="0 0 126.56 24" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
         <style type="text/css">
@@ -25,6 +25,14 @@
         </g>
         </svg>
     </a>
-    <!-- TODO: add sponsors -->
+    
+    <h2 class="my-4 text-center">Thank you to our sponsors! 🍕</h2>
+    <div class="container d-flex flex-row flex-wrap justify-content-center align-items-center">
+        {% for sponsor in sponsors %}
+            <a href="{{ sponsor.link }}" class="mx-5 my-3" style="height: 7em;">
+                <img src="{{ sponsor.logo_link }}" alt="{{ sponsor.name }} logo" class="h-100">
+            </a>
+        {% endfor %}
+    </div>
 
 {% endblock %}

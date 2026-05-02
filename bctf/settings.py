@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 from django.urls import reverse_lazy
+import datetime as dt
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -188,5 +189,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CTF_EVENT_NAME = 'DamCTF 2026'
 CTF_EVENT_DATE = '9 May 2026 00:00 UTC - 11 May 2026 00:00 UTC'
+CTF_EVENT_START = dt.datetime.fromisoformat('2026-05-02 00:00:00.000+00:00')
+CTF_EVENT_END = dt.datetime.fromisoformat('2026-05-07 00:00:00.000+00:00')
 CTF_CTFTIME_LINK = 'https://ctftime.org/event/3124/'
 THRESHOLD_SOLVES = 5
+SPONSORS = [
+    {
+        'name': 'sponsor1',
+        'link': 'https://sponsor.invalid',
+        'logo_link': STATIC_URL + 'sponsor1.png'
+    },
+]
