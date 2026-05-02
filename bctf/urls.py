@@ -24,6 +24,7 @@ urlpatterns = [
     path ('', FrontPage.as_view(), name='bctf-home'),
     path ('admin/', admin.site.urls),
     path ('scores/', Scores.as_view(), name='scoreboard'),
+    path ('scores/feed/', ScoresFeed.as_view(), name='scoreboard-feed'),
     path ('account/', include ('account.urls')),
     path ('chals/', include ('chals.urls')),
     # API endpoints below
