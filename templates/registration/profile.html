@@ -40,13 +40,12 @@
                 {% csrf_token %}
             </form>
             <button class="btn btn-outline-secondary w-100" form="create_token" type="submit" {% if access_tokens.count >= 4 %}disabled=""{% endif %}>Create Link</button>
-            <!-- Tool tips? -->
+            <!-- TODO: Tool tips? -->
         </div>
     </div>
 
     <div class="container d-flex flex-column my-4 p-2">
         <h3 class="mb-4">Contact Emails</h3>
-        <!-- TODO: make mandatory at team registration -->
         <p>Add at least one contact email so that we can get in touch for prizes.</p>
 
         {% for email in contact_emails %}
@@ -74,10 +73,10 @@
         <a href="{% url 'chals-list' %}" class=" text-decoration-none text-reset"><h3 class="mb-4">Solve History</h3></a>
 
         {% for solve in solves %}
-        <!-- TODO: add timezone information -->
         <div class="container d-flex flex-row mx-1">
             <p class="flex-grow-1">{{ solve.challenge.name }} <span class="text-secondary">({{ solve.challenge.category }})</span></p>
-            <p>{{ solve.time_of_solve }}</p>
+            <!-- TODO: full date on the tool tips -->
+            <p data-datetime="{{ solve.time_of_solve|date:'c' }}">{{ solve.time_of_solve|date:"D" }} {{ solve.time_of_solve|time:"g:i A e" }}</p>
         </div>
         {% endfor %}
     </div>

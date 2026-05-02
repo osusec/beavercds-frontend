@@ -10,7 +10,7 @@ class Challenge (models.Model):
     description = models.TextField ()
     min_points = models.IntegerField ()
     max_points = models.IntegerField ()
-    flag = models.TextField ()
+    flag = models.CharField (max_length=1000)
 
     active = models.BooleanField () # only active challenges get solves
 

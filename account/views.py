@@ -130,7 +130,6 @@ class DeleteContactEmail (LoginRequiredMixin, View):
     def post (self, request):
         team = request.user
 
-        # TODO: check that authz worked correctly here
         form = RemoveContactEmailForm(request.user, request.POST)
         if form.is_valid():
             email = form.cleaned_data['email']

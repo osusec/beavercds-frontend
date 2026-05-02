@@ -16,9 +16,9 @@ class TeamCreationForm(UserCreationForm):
 
 
 class TokenDeleteForm(forms.Form):
+    # Authorization controls
     token = forms.ModelChoiceField(queryset=CTFTeam_LongtermTokens.objects.none())
 
-    # TODO: double check that this is sufficient authz
     def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['token'].queryset = CTFTeam_LongtermTokens.objects.filter(team=user)
@@ -29,9 +29,9 @@ class AddContactEmailForm (forms.Form):
 
 
 class RemoveContactEmailForm (forms.Form):
+    # Authorization controls
     email = forms.ModelChoiceField (queryset=CTFTeam_ContactEmails.objects.none())
 
-    # TODO: double check that this is sufficient authz
     def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['email'].queryset = CTFTeam_ContactEmails.objects.filter(team=user)
