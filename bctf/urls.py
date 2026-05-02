@@ -18,7 +18,6 @@ from django.contrib import admin
 from django.urls import path, include
 from .views import *
 from django.views.decorators.csrf import csrf_exempt
-from account.views import OAuth_Step2
 
 
 urlpatterns = [
@@ -30,6 +29,4 @@ urlpatterns = [
     # API endpoints below
     path ('api/checkaccess/', CheckAccess.as_view(), name='check-access'),
     path ('api/resolvestate/', csrf_exempt(ResolveState.as_view()), name='resolve-state'), # TODO: DO NOT CSRF_EXEMPT :)
-    # TODO: hardcoded for ctftime for now:
-    path ('integrations/ctftime/callback', OAuth_Step2.as_view(), name='oauth-step2'),
 ]
