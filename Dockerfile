@@ -15,6 +15,9 @@ RUN uv sync --locked
 # Copy the project into the image
 COPY . /app
 
+# build migration files for this version
+RUN uv run manage.py makemigrations
+
 USER app
 EXPOSE 8001
-CMD uv run gunicorn --bind 0.0.0.0:8000 bctf.asgi
+CMD uv run gunicorn --bind 0.0.0.0:8000 bctf.wsgi
