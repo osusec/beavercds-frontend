@@ -1,5 +1,7 @@
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, JsonResponse
+
 from .settings import AUTHORIZATION_TOKEN
+
 
 class AuthorizationTokenMiddleware:
     def __init__(self, get_response):
@@ -12,4 +14,4 @@ class AuthorizationTokenMiddleware:
             if request_token == AUTHORIZATION_TOKEN:
                 return self.get_response(request)
         
-        return JsonResponse('Unauthorized', status=401)
+        return JsonResponse({"errors": "Unauthorized"}, status=401)
