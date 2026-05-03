@@ -2,8 +2,11 @@ FROM python:3.12-alpine
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
+RUN apk add caddy tini
+
 # Disable development dependencies
 ENV UV_NO_DEV=1
+ENV PYTHONUNBUFFERED=1
 
 RUN adduser -S -s /sbin/nologin app
 
@@ -19,5 +22,5 @@ COPY . /app
 RUN uv run manage.py makemigrations
 
 USER app
-EXPOSE 8001
-CMD uv run gunicorn --bind 0.0.0.0:8000 bctf.wsgi
+EXPOSE 8000
+CMD ["tini", "-g", "--", "/app/container-aux/entrypoint.sh"]

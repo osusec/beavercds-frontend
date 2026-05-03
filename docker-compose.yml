@@ -1,36 +1,10 @@
 services:
-  caddy:
-    image: lucaslorentz/caddy-docker-proxy:alpine
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ${DOCKER_SOCK:-/var/run/docker.sock}:/var/run/docker.sock:z
-      - caddy_data:/data
-    restart: unless-stopped
 
   db:
     image: postgres
     environment:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: rng
-
-  migrations:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    command: [uv, run, ./manage.py, migrate]
-
-    environment:
-      POSTGRES_HOST: db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: rng
-
-      CTFTIME_OAUTH_CLIENTID: x
-      CTFTIME_OAUTH_CLIENTSECRET: x
-    depends_on:
-      - db
 
   app:
     build:
@@ -44,29 +18,10 @@ services:
 
       CTFTIME_OAUTH_CLIENTID: x
       CTFTIME_OAUTH_CLIENTSECRET: x
+    ports:
+      - 8000:8000
     depends_on:
       - migrations
-    labels:
-      caddy: "https://damctf.xyz"
-      caddy.tls: internal
-      caddy.1_handle:
-      caddy.1_handle.reverse_proxy: "{{upstreams 8000}}"
-
-  api:
-    build:
-      context: .
-      dockerfile: Dockerfile.api
-    environment:
-      POSTGRES_HOST: db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: rng
-    depends_on:
-      - migrations
-    labels:
-      caddy: "https://damctf.xyz"
-      caddy.0_handle_path: /api/*
-      caddy.0_handle_path.reverse_proxy: "{{upstreams 8001}}"
 
 volumes:
   caddy_data:

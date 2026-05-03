@@ -1,0 +1,7 @@
+:8000 {
+  file_server /static/* {
+    root /static
+  }
+	reverse_proxy /api/* localhost:8101
+	reverse_proxy * localhost:8100
+}
