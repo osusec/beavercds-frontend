@@ -17,4 +17,4 @@ COPY . /app
 
 USER app
 EXPOSE 8001
-CMD uv run gunicorn --bind 0.0.0.0:8000 bctf.asgi
+CMD uv run gunicorn --bind 0.0.0.0:8001 bctf-api.asgi

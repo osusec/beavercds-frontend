@@ -18,8 +18,7 @@ services:
   app:
     build:
       context: .
-      args:
-        APP: bctf.asgi
+      dockerfile: Dockerfile
     environment:
       POSTGRES_HOST: db
       POSTGRES_USER: postgres
@@ -39,8 +38,7 @@ services:
   api:
     build:
       context: .
-      args:
-        APP: bctf-api.asgi
+      dockerfile: Dockerfile.api
     environment:
       POSTGRES_HOST: db
       POSTGRES_USER: postgres
@@ -51,7 +49,7 @@ services:
     labels:
       caddy: "https://damctf.xyz"
       caddy.0_handle_path: /api/*
-      caddy.0_handle_path.reverse_proxy: "{{upstreams 8000}}"
+      caddy.0_handle_path.reverse_proxy: "{{upstreams 8001}}"
 
 volumes:
   caddy_data:
