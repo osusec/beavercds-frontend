@@ -27,7 +27,4 @@ urlpatterns = [
     path ('scores/feed/', ScoresFeed.as_view(), name='scoreboard-feed'),
     path ('account/', include ('account.urls')),
     path ('chals/', include ('chals.urls')),
-    # API endpoints below
-    path ('api/checkaccess/', CheckAccess.as_view(), name='check-access'),
-    path ('api/resolvestate/', csrf_exempt(ResolveState.as_view()), name='resolve-state'), # TODO: DO NOT CSRF_EXEMPT :)
 ]
