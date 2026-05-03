@@ -17,24 +17,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from .views import *
+from django.views.decorators.csrf import csrf_exempt
 
-'''django.contrib.auth.urls
-login/ [name='login']
-logout/ [name='logout']
-password_change/ [name='password_change']
-password_change/done/ [name='password_change_done']
-password_reset/ [name='password_reset']
-password_reset/done/ [name='password_reset_done']
-reset/<uidb64>/<token>/ [name='password_reset_confirm']
-reset/done/ [name='password_reset_complete']
-'''
 
 urlpatterns = [
-    path ('', FrontPage, name='bctf-home'),
-    path ('admin/', admin.site.urls),
-    path ('scores/', Scores, name='scoreboard'),
-    path ('profile/', include ('account.urls')),
-    path ('profile/', include ('django.contrib.auth.urls')),
+    path ('', FrontPage.as_view(), name='bctf-home'),
+    path ('scores/', Scores.as_view(), name='scoreboard'),
+    path ('scores/feed/', ScoresFeed.as_view(), name='scoreboard-feed'),
+    path ('account/', include ('account.urls')),
     path ('chals/', include ('chals.urls')),
-    #path ('admin/challs/', ""),
 ]

@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Scoreboard | {{ event_name }}{% endblock %}
+
+{% block content %}
+
+    <h2 class="mb-4 my-3">Scoreboard</h2>
+    <div class="container">
+        <table class="table table-striped w-100">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Team</th>
+                    <th scope="col">Points</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in scores %}
+                    <tr>
+                        <td>{{ entry.place }} </td>
+                        <td><span>{{ entry.team_name }}</span>
+                            {% if ctftime %} 
+                                <svg width="24" height="24" version="1.1" viewBox="0 0 24 24" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+                                <style type="text/css">
+                                    .st0{fill:#E3000B;}
+                                    .st1{fill:#FFFFFF;}
+                                </style>
+                                <g transform="translate(-109.43 -20.917)">
+                                    <path class="st1" d="m109.43 21.763v22.307h24v-22.307zm7.3156 3.0415h13.414v16.225h-17.452v-15.995l7.828 7.828-3.6932 3.6873 2.4358 2.1583 5.6886-5.6827z" stroke-width=".60452"/>
+                                </g>
+                                </svg>
+                            {% endif %}
+                        </td>
+                        <td>{{ entry.sum_points }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}

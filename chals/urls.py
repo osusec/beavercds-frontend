@@ -1,9 +1,8 @@
-##
-
 from django.urls import path
 from .views import *
 from django.contrib.auth.decorators import login_required
 
 urlpatterns = [
-    path ('', login_required(ListChal), name='chals-list')
+    path ('', ListChal.as_view(), name='chals-list'),
+    path ('submit', SubmitFlag.as_view(), name='submit-flag')
 ]

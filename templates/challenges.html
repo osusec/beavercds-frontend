@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %} Challenges | {{ event_name }}{% endblock %}
+
+{% block content %}
+
+    <h2 class="mb-4 my-3">Challenges</h2>
+    <div class="d-flex flex-row justify-content-evenly w-100 mb-4 my-3">
+        <a href="{% url 'chals-list' %}" class="link-secondary link-underline-opacity-0">all</a>
+        {% for cat in categories %}
+            <a href="{% url 'chals-list' %}{% querystring category=cat.category %}" class="link-secondary link-underline-opacity-0">{{ cat.category }}</a>
+        {% endfor %}
+    </div>
+    <div class="container">
+        {% for challenge, files in chals %}
+            <div class="d-flex flex-column align-items-center mb-4 p-4 border {% if challenge.solved %}border-success{% else %}border-secondary{% endif %}">
+                <div class="w-100 d-flex flex-row align-items-center justify-content-end">
+                    <h3 class="flex-grow-1 mb-4">{{ challenge.name }}</h3>
+                    <h3>{{ challenge.current_points_value }}</h3>
+                </div>
+                <div class="w-100 d-flex flex-row align-items-center justify-content-end text-secondary">
+                    <p class="flex-grow-1">{{ challenge.author }}</p>
+                    <p>{{ challenge.category }}</p>
+                </div>
+
+                <div class="w-100">
+                    {% load markdownify %}
+                    {{ challenge.description|markdownify }}
+                </div>
+
+                <div class="d-flex flex-row flex-wrap justify-content-center w-100 mb-3">
+                    {% for file in files %}
+                        <a href="{{ file.url }}" class="link-secondary link-underline-opacity-0 mx-4">{{ file.basename }}</a>
+                    {% endfor %}
+                </div>
+
+                {% if not challenge.solved %}
+                <form class="bcds-form" method="post" action="{% url 'submit-flag' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="challenge" value="{{ challenge.chal_id }}">
+                    <div class="input-group">
+                        <input type="text" class="form-control border-secondary mx-1" name="submitted_flag" placeholder="Flag">
+                        <button class="btn btn-outline-secondary mx-1" type="submit">Submit</button>
+                    </div>
+                </form>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}

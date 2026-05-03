@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Team Profile | {{ event_name }}{% endblock %}
+
+{% block content %}
+
+    <h2 class="mb-4 my-3">{{ user.team_name }}
+        {% if ctftime %} 
+            <svg width="24" height="24" version="1.1" viewBox="0 0 24 24" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+            <style type="text/css">
+                .st0{fill:#E3000B;}
+                .st1{fill:#FFFFFF;}
+            </style>
+            <g transform="translate(-109.43 -20.917)">
+                <path class="st1" d="m109.43 21.763v22.307h24v-22.307zm7.3156 3.0415h13.414v16.225h-17.452v-15.995l7.828 7.828-3.6932 3.6873 2.4358 2.1583 5.6886-5.6827z" stroke-width=".60452"/>
+            </g>
+            </svg>
+        {% endif %}
+    </h2>
+    <div class="container d-flex flex-column mb-4 p-2">
+        <h3 class="mb-4">Access Links</h3>
+        <p>Give a login link to your team for quick access.</p>
+
+        {% for token in access_tokens %}
+            <div class="input-group mb-2">
+                <input type="text" id="link_{{ token.pk }}" class="form-control border-secondary mx-1" name="submitted_flag" placeholder="Link" value="{{ request.scheme }}://{{ request.get_host }}{% url 'token_auth' %}{% querystring token=token.token %}">
+                <button class="btn btn-outline-secondary mx-1 bcds-copy-btn" type="button" data-link-id="link_{{ token.pk }}" >Copy</button>
+                <form class="bcds-form" id="delete_{{ token.pk }}" method="post" action="{% url 'delete_token' %}" hidden>
+                    {% csrf_token %}
+                    <input type="hidden" name="token" value="{{ token.pk }}">
+                </form>
+                <button class="btn btn-outline-danger mx-1" form="delete_{{ token.pk }}" type="submit">Delete</button>
+            </div>
+        {% endfor %}
+
+        <div class="mx-1 mb-2">
+            <form class="bcds-form" id="create_token" method="post" action="{% url 'create_token' %}" hidden>
+                {% csrf_token %}
+            </form>
+            <div {% if access_tokens.count >= 4 %}data-bs-toggle="tooltip" data-bs-title="Only 4 access links can be active at once."{% endif %}>
+            <button class="btn btn-outline-secondary w-100" form="create_token" type="submit" {% if access_tokens.count >= 4 %}disabled=""{% endif %}>Create Link</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container d-flex flex-column my-4 p-2">
+        <h3 class="mb-4">Contact Emails</h3>
+        <p>Add at least one contact email so that we can get in touch for prizes.</p>
+
+        {% for email in contact_emails %}
+            <div class="input-group d-flex flex-row mb-2">
+                <span class="input-group-text mx-1 flex-grow-1">{{ email.email }}</span>
+                <form class="bcds-form" id="delete_{{email.pk}}" method="post" action="{% url 'delete_email' %}" hidden>
+                    {% csrf_token %}
+                    <input type="hidden" name="email" value="{{ email.pk }}">
+                </form>
+                <button class="btn btn-outline-danger mx-1" form="delete_{{email.pk}}" type="submit">Delete</button>
+            </div>
+        {% endfor %}
+
+        <form class="bcds-form" id="create_email" method="post" action="{% url 'create_email' %}">
+            {% csrf_token %}
+            <div class="input-group">
+                <input type="email" class="form-control border-secondary mx-1" name="email" placeholder="Email">
+                <button class="btn btn-outline-secondary mx-1" type="submit">Add</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="container d-flex flex-column mt-4 p-2">
+        <a href="{% url 'chals-list' %}" class=" text-decoration-none text-reset"><h3 class="mb-4">Solve History</h3></a>
+
+        {% for solve in solves %}
+        <div class="container d-flex flex-row mx-1">
+            <p class="flex-grow-1">{{ solve.challenge.name }} <span class="text-secondary">({{ solve.challenge.category }})</span></p>
+            <p data-datetime="{{ solve.time_of_solve|date:'c' }}" data-bs-toggle="tooltip" data-bs-title="{{ solve.time_of_solve|date:'M j, Y' }}">{{ solve.time_of_solve|date:"D" }} {{ solve.time_of_solve|time:"g:i A e" }}</p>
+        </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}
