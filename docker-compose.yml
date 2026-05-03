@@ -1,10 +1,23 @@
 services:
+  caddy:
+    image: caddy
+    command: caddy reverse-proxy --from https://damctf.xyz --to http://app:8000 --internal-certs
+    ports:
+      - 80:80
+      - 443:443
 
   db:
-    image: postgres
+    image: postgres:18
     environment:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: rng
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: pg_isready -U postgres -d rng
+      interval: 5s
+      timeout: 3s
+      retries: 3
 
   app:
     build:
@@ -21,7 +34,8 @@ services:
     ports:
       - 8000:8000
     depends_on:
-      - migrations
+      db:
+        condition: service_healthy
 
 volumes:
-  caddy_data:
+  postgres_data:
