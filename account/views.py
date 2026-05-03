@@ -8,6 +8,7 @@ from django.contrib.auth import login, authenticate
 import secrets
 from django.db import IntegrityError
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
 
 from bctf.settings import OAUTH, LOGIN_REDIRECT_URL, TOKEN_LENGTH
 
@@ -81,8 +82,7 @@ class CreateToken (LoginRequiredMixin, View):
 
         # Don't have too many active tokens at a time
         if CTFTeam_LongtermTokens.objects.filter(team=team).count() >= 4:
-            # TODO: return errors
-            return redirect(reverse_lazy('profile-home'))
+            return JsonResponse({'errors':['Only 4 access links can be active at once.']}, status=400)
 
         saved = False
         while not saved:
@@ -97,20 +97,20 @@ class CreateToken (LoginRequiredMixin, View):
             except IntegrityError:
                 saved = False
 
-        return redirect(reverse_lazy('profile-home'))
+        return JsonResponse({"redirect": reverse_lazy('profile-home')})
 
 
 class DeleteToken (LoginRequiredMixin, View):
     def post (self, request):
         team = request.user
 
-        # check that authz worked correctly here
         form = TokenDeleteForm(request.user, request.POST)
         if form.is_valid():
             token = form.cleaned_data['token']
             token.delete()
-
-        return redirect(reverse_lazy('profile-home'))
+            return JsonResponse({'redirect': reverse_lazy('profile-home')})
+        else:
+            return JsonResponse({'errors':['Link not found.']}, status=404)
 
 
 class AddContactEmail (LoginRequiredMixin, View):
@@ -122,8 +122,13 @@ class AddContactEmail (LoginRequiredMixin, View):
             email_addr = form.cleaned_data['email']
             new_email = CTFTeam_ContactEmails(team=team, email=email_addr)
             new_email.save()
-
-        return redirect(reverse_lazy('profile-home'))
+            return JsonResponse({'redirect': reverse_lazy('profile-home')})
+        else:
+            errors = []
+            for field,err in form.errors.items():
+                for inst in err:
+                    errors.append(inst)
+            return JsonResponse({'errors':errors}, status=400)
 
 
 class DeleteContactEmail (LoginRequiredMixin, View):
@@ -134,6 +139,7 @@ class DeleteContactEmail (LoginRequiredMixin, View):
         if form.is_valid():
             email = form.cleaned_data['email']
             email.delete()
-        
-        return redirect(reverse_lazy('profile-home'))
+            return JsonResponse({'redirect': reverse_lazy('profile-home')})
+        else:
+            return JsonResponse({'errors':['Email not found.']}, status=404)
         

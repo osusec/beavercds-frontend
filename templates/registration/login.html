@@ -9,12 +9,12 @@
         <form method="post" action="{% url 'login' %}" class="d-flex flex-column mb-4">
             {% csrf_token %}
             <div class="input-group my-1">
-                <input type="text" class="form-control border-secondary" name="username" placeholder="Team name" autofocus="" autocapitalize="none" autocomplete="username" maxlength="128" required="">
+                <input type="text" class="form-control border-secondary" name="username" placeholder="Team name" autofocus="" autocapitalize="none" autocomplete="username" maxlength="128" required="" {% if form.username.value %}value="{{ form.username.value }}"{% endif %}>
             </div>
             <div class="input-group my-1">
                 <input type="password" class="form-control border-secondary" name="password" placeholder="Password" autocomplete="current-password" required="">
             </div>
-            <button class="btn btn-outline-secondary my-1" type="submit">Login</button>
+            <button class="btn btn-outline-secondary my-1" type="submit" {% if form.errors %}data-bs-toggle="popover" data-bs-custom-class="error-popover border-danger-subtle" data-bs-html="true" data-bs-placement="right" data-bs-content="{% for e in form.non_field_errors %}{{ e }}<br>{% endfor %}" {% endif %}>Login</button>
         </form>
 
         <div class="d-flex flex-column">

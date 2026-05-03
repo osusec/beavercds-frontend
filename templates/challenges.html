@@ -35,7 +35,7 @@
                 </div>
 
                 {% if not challenge.solved %}
-                <form method="post" action="{% url 'submit-flag' %}">
+                <form class="bcds-form" method="post" action="{% url 'submit-flag' %}">
                     {% csrf_token %}
                     <input type="hidden" name="challenge" value="{{ challenge.chal_id }}">
                     <div class="input-group">

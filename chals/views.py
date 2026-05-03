@@ -5,6 +5,7 @@ from .models import *
 from django.db.models import Exists, OuterRef, F, Max, Case, When, Count
 from .forms import SubmitFlagForm
 from django.urls import reverse_lazy
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
 from bctf.settings import THRESHOLD_SOLVES
 
 class ListChal (LoginRequiredMixin, View):
@@ -47,10 +48,16 @@ class SubmitFlag (LoginRequiredMixin, View):
             challenge = form.cleaned_data['challenge']
             submitted_flag = form.cleaned_data['submitted_flag']
 
-            if not ChallengeSolve.objects.filter(challenge=challenge, team=team).exists():
-                if submitted_flag == challenge.flag:
-                    new_solve = ChallengeSolve (challenge=challenge, team=team)
-                    new_solve.save()
-        
-        # TODO: once i can figure out how to print errors, do rendering instead
-        return redirect(reverse_lazy('chals-list'))
+            if ChallengeSolve.objects.filter(challenge=challenge, team=team).exists():
+                # Team has already submitted this flag before
+                return JsonResponse({'redirect': reverse_lazy('chals-list')})
+
+            if submitted_flag == challenge.flag:
+                new_solve = ChallengeSolve (challenge=challenge, team=team)
+                new_solve.save()
+                return JsonResponse({'redirect': reverse_lazy('chals-list')})
+            else:
+                return JsonResponse({'errors':['Flag was incorrect.']}, status=400)
+                
+        else: # Error with form, probably challenge not found
+            return JsonResponse({'errors':['Challenge not found.']}, status=404)

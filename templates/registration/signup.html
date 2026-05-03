@@ -17,7 +17,7 @@
             <div class="input-group my-1">
                 <input type="password" class="form-control border-secondary" name="password2" autocomplete="new-password" required="" placeholder="Confirm password">
             </div>
-            <button class="btn btn-outline-secondary my-1" type="submit">Register</button>
+            <button class="btn btn-outline-secondary my-1" type="submit" {% if form.errors %}data-bs-toggle="popover" data-bs-custom-class="error-popover border-danger-subtle" data-bs-html="true" data-bs-placement="right" data-bs-content="{% for e in form.non_field_errors %}{{ e }}<br>{% endfor %}{% for e in form.team_name.errors %}{{ e }}<br>{% endfor %}{% for e in form.password2.errors %}{{ e }}<br>{% endfor %}" {% endif %}>Register</button>
         </form>
 
         <div class="d-flex flex-column">

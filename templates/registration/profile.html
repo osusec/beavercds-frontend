@@ -24,9 +24,8 @@
         {% for token in access_tokens %}
             <div class="input-group mb-2">
                 <input type="text" id="link_{{ token.pk }}" class="form-control border-secondary mx-1" name="submitted_flag" placeholder="Link" value="{{ request.scheme }}://{{ request.get_host }}{% url 'token_auth' %}{% querystring token=token.token %}">
-                 <!-- TODO: add interaction response -->
                 <button class="btn btn-outline-secondary mx-1 bcds-copy-btn" type="button" data-link-id="link_{{ token.pk }}" >Copy</button>
-                <form id="delete_{{ token.pk }}" method="post" action="{% url 'delete_token' %}" hidden>
+                <form class="bcds-form" id="delete_{{ token.pk }}" method="post" action="{% url 'delete_token' %}" hidden>
                     {% csrf_token %}
                     <input type="hidden" name="token" value="{{ token.pk }}">
                 </form>
@@ -35,7 +34,7 @@
         {% endfor %}
 
         <div class="mx-1 mb-2">
-            <form id="create_token" method="post" action="{% url 'create_token' %}" hidden>
+            <form class="bcds-form" id="create_token" method="post" action="{% url 'create_token' %}" hidden>
                 {% csrf_token %}
             </form>
             <div {% if access_tokens.count >= 4 %}data-bs-toggle="tooltip" data-bs-title="Only 4 access links can be active at once."{% endif %}>
@@ -51,7 +50,7 @@
         {% for email in contact_emails %}
             <div class="input-group d-flex flex-row mb-2">
                 <span class="input-group-text mx-1 flex-grow-1">{{ email.email }}</span>
-                <form id="delete_{{email.pk}}" method="post" action="{% url 'delete_email' %}" hidden>
+                <form class="bcds-form" id="delete_{{email.pk}}" method="post" action="{% url 'delete_email' %}" hidden>
                     {% csrf_token %}
                     <input type="hidden" name="email" value="{{ email.pk }}">
                 </form>
@@ -59,7 +58,7 @@
             </div>
         {% endfor %}
 
-        <form method="post" action="{% url 'create_email' %}">
+        <form class="bcds-form" id="create_email" method="post" action="{% url 'create_email' %}">
             {% csrf_token %}
             <div class="input-group">
                 <input type="email" class="form-control border-secondary mx-1" name="email" placeholder="Email">
