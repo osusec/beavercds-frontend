@@ -13,21 +13,25 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 from django.urls import reverse_lazy
 from django.utils.timezone import datetime
+from authlib.integrations.django_client import OAuth
+import environ
+
+env = environ.Env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-)b05ld_ymfxfl(yh-%8oa)0ct9*7bvorsg*7*@2_h%v#3-!6@8'
+SECRET_KEY = env.str('BCTF_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool('BCTF_DEBUG', default=False)
 
-ALLOWED_HOSTS = ['damctf.xyz', 'localhost', '127.0.0.1', '10.0.0.240']
+ALLOWED_HOSTS = env.list('BCTF_ALLOWED_HOSTS')
+
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 
@@ -39,7 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.staticfiles', # TODO: punt this to the web server
+    'django.contrib.staticfiles',
     'markdownify.apps.MarkdownifyConfig',
 ]
 
@@ -66,12 +70,8 @@ LOGIN_REDIRECT_URL = reverse_lazy('profile-home')
 LOGOUT_REDIRECT_URL = '/'
 
 
-with open ('CTFTIME_OAUTH_CLIENTID', 'r') as f:
-    CTFTIME_OAUTH_CLIENTID = f.read().rstrip()
-with open('CTFTIME_OAUTH_CLIENTSECRET', 'r') as f:
-    CTFTIME_OAUTH_CLIENTSECRET = f.read().rstrip()
-
-from authlib.integrations.django_client import OAuth
+CTFTIME_OAUTH_CLIENTID = env.str('BCTF_CTFTIME_CLIENTID')
+CTFTIME_OAUTH_CLIENTSECRET = env.str('BCTF_CTFTIME_CLIENTSECRET')
 OAUTH = OAuth()
 OAUTH.register(
     name='ctftime',
@@ -124,11 +124,11 @@ WSGI_APPLICATION = 'bctf.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'rng',
-        'USER': 'postgres',
-        'PASSWORD': 'password',
-        'HOST': '127.0.0.1',
-        'PORT': '5432'
+        'NAME': env.str('BCTF_DB_NAME', default='bctf'),
+        'USER': env.str('BCTF_DB_USERNAME', default='postgres'),
+        'PASSWORD': env.str('BCTF_DB_PASSWORD'),
+        'HOST': env.str('BCTF_DB_HOST'),
+        'PORT': env.str('BCTF_DB_PORT', default='')
     }
 }
 
@@ -183,16 +183,11 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# TODO: make this generic
-CTF_EVENT_NAME = 'DamCTF 2026'
-CTF_EVENT_START = datetime.fromisoformat('2026-05-02 00:00:00.000+00:00')
-CTF_EVENT_END = datetime.fromisoformat('2026-05-07 00:00:00.000+00:00')
-CTF_CTFTIME_LINK = 'https://ctftime.org/event/3124/'
-THRESHOLD_SOLVES = 5
-SPONSORS = [
-    {
-        'name': 'sponsor1',
-        'link': 'https://sponsor.invalid',
-        'logo_link': STATIC_URL + 'sponsor1.png'
-    },
-]
+CTF_EVENT_NAME = ''
+CTF_EVENT_START = datetime.fromisoformat('1970-01-01 00:00:00.000+00:00')
+CTF_EVENT_END = datetime.fromisoformat('1970-01-01 00:00:00.000+00:00')
+CTF_CTFTIME_LINK = ''
+THRESHOLD_SOLVES = 20
+SPONSORS = []
+
+from helm_settings import *

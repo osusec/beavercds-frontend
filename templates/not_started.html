@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ event_name }}{% endblock %}
+
+{% block content %}
+
+    <h1 class="mb-4 my-3">The CTF hasn't started yet! See you soon!</h1>
+    <p class="text-center">{{ event_start|date:"M j, Y" }} {{ event_start|time:"H:i e" }} – {{ event_end|date:"M j, Y" }} {{ event_end|time:"H:i e" }}</p>
+
+{% endblock %}

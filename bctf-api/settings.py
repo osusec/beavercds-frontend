@@ -22,12 +22,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-)b05ld_ymfxfl(yh-%8oa)0ct9*7bvorsg*7*@2_h%v#3-!6@8'
+SECRET_KEY = env.str('BCTF_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool('BCTF_DEBUG', default=False)
 
-ALLOWED_HOSTS = ['damctf.xyz', 'localhost', '127.0.0.1', '10.0.0.240']
+ALLOWED_HOSTS = env.list('BCTF_ALLOWED_HOSTS')
+
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 
@@ -44,7 +45,7 @@ MIDDLEWARE = [
     'bctf-api.middleware.AuthorizationTokenMiddleware',
 ]
 
-AUTHORIZATION_TOKEN = 'xyz' # TODO
+AUTHORIZATION_TOKEN = env.str('BCTF_API_AUTHTOKEN')
 
 AUTH_USER_MODEL = "account.CTFTeam"
 
@@ -59,11 +60,11 @@ WSGI_APPLICATION = 'bctf.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'rng',
-        'USER': 'postgres',
-        'PASSWORD': 'password',
-        'HOST': '127.0.0.1',
-        'PORT': '5432'
+        'NAME': env.str('BCTF_DB_NAME', default='bctf'),
+        'USER': env.str('BCTF_DB_USERNAME', default='postgres'),
+        'PASSWORD': env.str('BCTF_DB_PASSWORD'),
+        'HOST': env.str('BCTF_DB_HOST'),
+        'PORT': env.str('BCTF_DB_PORT', default='')
     }
 }
 
