@@ -5,20 +5,7 @@
 from django.urls import path, include
 from .views import *
 from django.contrib.auth.decorators import login_required
-
-# TODO: remove
-'''django.contrib.auth.urls
-login/ [name='login']
-logout/ [name='logout']
-password_change/ [name='password_change']
-password_change/done/ [name='password_change_done']
-password_reset/ [name='password_reset']
-password_reset/done/ [name='password_reset_done']
-reset/<uidb64>/<token>/ [name='password_reset_confirm']
-reset/done/ [name='password_reset_complete']
-'''
-
-# TODO: check pw_change and pw_reset urls
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path ('profile/', ProfilePage.as_view(), name='profile-home'),
@@ -30,5 +17,7 @@ urlpatterns = [
     path ('token/delete', DeleteToken.as_view(), name='delete_token'),
     path ('email/create', AddContactEmail.as_view(), name='create_email'),
     path ('email/delete', DeleteContactEmail.as_view(), name='delete_email'),
-    path ('', include ('django.contrib.auth.urls')),
+    # path ('', include ('django.contrib.auth.urls')),
+    path ('login/', auth_views.LoginView.as_view(), name='login'),
+    path ('logout/', auth_views.LogoutView.as_view(), name='logout'),
 ]

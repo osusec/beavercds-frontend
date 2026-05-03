@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 from django.urls import reverse_lazy
-import datetime as dt
+from django.utils.timezone import datetime
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -34,13 +34,11 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
     'account',
     'chals',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.messages',
     'django.contrib.staticfiles', # TODO: punt this to the web server
     'markdownify.apps.MarkdownifyConfig',
 ]
@@ -51,7 +49,6 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'bctf.middleware.TimezoneMiddleware',
 ]
@@ -186,11 +183,10 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
+# TODO: make this generic
 CTF_EVENT_NAME = 'DamCTF 2026'
-CTF_EVENT_DATE = '9 May 2026 00:00 UTC - 11 May 2026 00:00 UTC'
-CTF_EVENT_START = dt.datetime.fromisoformat('2026-05-02 00:00:00.000+00:00')
-CTF_EVENT_END = dt.datetime.fromisoformat('2026-05-07 00:00:00.000+00:00')
+CTF_EVENT_START = datetime.fromisoformat('2026-05-02 00:00:00.000+00:00')
+CTF_EVENT_END = datetime.fromisoformat('2026-05-07 00:00:00.000+00:00')
 CTF_CTFTIME_LINK = 'https://ctftime.org/event/3124/'
 THRESHOLD_SOLVES = 5
 SPONSORS = [

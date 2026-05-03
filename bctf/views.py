@@ -9,6 +9,7 @@ from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views import View
 import json
 from bctf.settings import THRESHOLD_SOLVES
+from chals.mixins import CTFStartMixin
 
 
 class FrontPage (View):
@@ -16,7 +17,7 @@ class FrontPage (View):
         return render (request, "index.html")
 
 
-class Scores (View):
+class Scores (CTFStartMixin, View):
     def get (self, request):
         # TODO: most disgusting code ever written
         solve_count_subq = (ChallengeSolve.objects
@@ -52,7 +53,7 @@ class Scores (View):
 
 
 # For CTFTime
-class ScoresFeed (View):
+class ScoresFeed (CTFStartMixin, View):
     def get (self, request):
         # TODO: most disgusting code ever written
         solve_count_subq = (ChallengeSolve.objects

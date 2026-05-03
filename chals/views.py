@@ -7,8 +7,9 @@ from .forms import SubmitFlagForm
 from django.urls import reverse_lazy
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
 from bctf.settings import THRESHOLD_SOLVES
+from .mixins import CTFStartMixin, CTFEndMixin
 
-class ListChal (LoginRequiredMixin, View):
+class ListChal (LoginRequiredMixin, CTFStartMixin, View):
     def get (self, request):
         team = request.user
         category = request.GET.get('category')
@@ -39,7 +40,7 @@ class ListChal (LoginRequiredMixin, View):
 
         return render (request, "challenges.html", {'chals': chals_with_files, 'categories': categories, 'submit_form': SubmitFlagForm})
 
-class SubmitFlag (LoginRequiredMixin, View):
+class SubmitFlag (CTFStartMixin, LoginRequiredMixin, CTFEndMixin, View):
     def post (self, request):
         team = request.user
 

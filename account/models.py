@@ -15,7 +15,7 @@ class CTFTeam (AbstractBaseUser, PermissionsMixin):
     team_name = models.CharField (primary_key=True, max_length=128)
     ctftime_bool = models.BooleanField()
     username = None
-    is_staff = models.BooleanField(default=False) # TODO admin panel please
+    is_staff = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'team_name'
     REQUIRED_FIELDS = []
@@ -37,13 +37,3 @@ class CTFTime_Team (models.Model):
 class CTFTeam_LongtermTokens (models.Model):
     team = models.ForeignKey(CTFTeam, on_delete=models.CASCADE)
     token = models.CharField(primary_key=True, max_length=2*TOKEN_LENGTH) # Base64
-
-'''
-- CTFTime (oauth through individual user)
-- NormalRegistration
-    - Email (username + password for now)
-
-- all others join through token
-'''
-
-
