@@ -53,9 +53,14 @@ spec:
       labels:
         app: beaverctf-frontend
     spec:
+      securityContext:
+        runAsUser: 101
+        runAsGroup: 101
+        fsGroup: 101
       initContainers:
         - name: migrations
           image: ghcr.io/osusec/beavercds-frontend:main
+          imagePullPolicy: Always
           command:
             - sh
             - -xc
@@ -99,8 +104,6 @@ spec:
           ports:
             - name: app
               containerPort: 8000
-            - name: api
-              containerPort: 8001
           envFrom:
             - secretRef:
                 name: beaverctf-secrets
@@ -146,40 +149,5 @@ spec:
                   number: 80
   tls:
     - hosts:
-        - damctf.xyz
-      secretName: beaverctf-frontend-tls
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: beaverctf-frontend-api
-spec:
-  selector:
-    app: beaverctf-frontend
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 8001
-
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: beaverctf-frontend-api
-spec:
-  rules:
-    - host: damctf.xyz
-      http:
-        paths:
-          - path: /api/
-            pathType: Prefix
-            backend:
-              service:
-                name: beaverctf-frontend-api
-                port:
-                  number: 80
-  tls:
-    - hosts:
-        - damctf.xyz
+        - frontend.damctf.livinginanother.world
       secretName: beaverctf-frontend-tls
