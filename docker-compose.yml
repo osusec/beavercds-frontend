@@ -20,6 +20,7 @@ services:
       retries: 3
 
   app:
+    image: ghcr.io/osusec/beavercds-frontend:local
     build: .
     environment: &django_env
       # BCTF_DEBUG: false
@@ -44,13 +45,13 @@ services:
         condition: service_healthy
 
   migrations:
+    image: ghcr.io/osusec/beavercds-frontend:local
     build: .
     environment: *django_env
     command:
       - sh
       - -c
       - |
-        cat bctf/helm_settings.py
         uv run manage.py makemigrations --noinput
         uv run manage.py migrate --noinput
     depends_on:
