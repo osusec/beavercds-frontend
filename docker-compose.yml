@@ -1,0 +1,61 @@
+services:
+  caddy:
+    image: caddy
+    command: caddy reverse-proxy --from https://damctf.xyz --to http://app:8000 --internal-certs
+    ports:
+      - 80:80
+      - 443:443
+
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: rng
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: pg_isready -U postgres -d rng
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+  app:
+    build: .
+    environment: &django_env
+      # BCTF_DEBUG: false
+      BCTF_SECRET_KEY: changemechangeme
+      BCTF_ALLOWED_HOSTS: localhost,damctf.xyz,leafeon.bagel.internal
+
+      BCTF_API_AUTHTOKEN: changemetoo
+      BCTF_CTFTIME_CLIENTID: x
+      BCTF_CTFTIME_CLIENTSECRET: x
+
+      BCTF_DB_HOST: db
+      #BCTF_DB_PORT
+      BCTF_DB_USERNAME: postgres
+      BCTF_DB_PASSWORD: password
+      BCTF_DB_NAME: rng
+    ports:
+      - 8000:8000
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
+
+  migrations:
+    build: .
+    environment: *django_env
+    command:
+      - sh
+      - -c
+      - |
+        cat bctf/helm_settings.py
+        uv run manage.py makemigrations --noinput
+        uv run manage.py migrate --noinput
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

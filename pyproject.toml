@@ -1,0 +1,16 @@
+[project]
+name = "beavercds-frontend"
+version = "0.1.0"
+description = "Scoreboard website for beavercds CTF framework"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "argon2-cffi==25.1.0",
+    "authlib==1.7.0",
+    "django==6.0.4",
+    "django-environ>=0.13.0",
+    "django-markdownify==0.9.6",
+    "gunicorn==25.3.0",
+    "psycopg[binary]==3.1.18",
+    "requests==2.32.5",
+]

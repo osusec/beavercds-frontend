@@ -1,0 +1,15 @@
+{
+  admin off
+  servers {
+    trusted_proxies static private_ranges
+  }
+}
+
+:8000 {
+  handle_path /static/* {
+    root * static/
+    file_server
+  }
+	# reverse_proxy /api/* localhost:8001
+	reverse_proxy * localhost:8002
+}
