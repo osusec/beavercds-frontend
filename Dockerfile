@@ -8,7 +8,7 @@ RUN apk add caddy tini
 ENV UV_NO_DEV=1
 ENV PYTHONUNBUFFERED=1
 
-RUN adduser -S -s /sbin/nologin rctf
+RUN adduser -S -s /sbin/nologin bctf
 
 # Sync the project into a new environment, asserting the lockfile is up to date
 WORKDIR /app
@@ -19,7 +19,7 @@ RUN uv sync --locked
 # Copy the project into the image
 COPY . /app
 
-RUN chown -R rctf /app
+RUN chown -R bctf /app
 USER rctf
 
 EXPOSE 8000
