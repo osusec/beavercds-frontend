@@ -1,7 +1,20 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: beaverctf-frontend-db
+  name: beaverctf-db
+type: Opaque
+stringData:
+  BCTF_DB_HOST: beavercds_pg
+  #BCTF_DB_PORT
+  BCTF_DB_USERNAME:
+  BCTF_DB_PASSWORD:
+  BCTF_DB_NAME:
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: beaverctf-secrets
 type: Opaque
 stringData:
   # BCTF_DEBUG: False
@@ -13,14 +26,6 @@ stringData:
 
   BCTF_CTFTIME_CLIENTID: x
   BCTF_CTFTIME_CLIENTSECRET: x
-
-  BCTF_DB_HOST: beavercds_pg
-  #BCTF_DB_PORT
-  BCTF_DB_USERNAME:
-  BCTF_DB_PASSWORD:
-  BCTF_DB_NAME:
-
-
 
 ---
 apiVersion: v1
@@ -71,7 +76,9 @@ spec:
               containerPort: 8001
           envFrom:
             - secretRef:
-                name: beaverctf-frontend-db
+                name: beaverctf-db
+            - secretRef:
+                name: beaverctf-secrets
           volumeMounts:
             - name: config
               mountPath: /app/bctf/helm_settings.py
@@ -149,4 +156,4 @@ spec:
   tls:
     - hosts:
         - damctf.xyz
-      secretName: beaverctf-frontend-api-tls
+      secretName: beaverctf-frontend-tls
