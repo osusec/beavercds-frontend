@@ -1,0 +1,99 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: beaverctf-frontend-db
+type: Opaque
+stringData:
+  # BCTF_DEBUG: False
+
+  BCTF_SECRET_KEY: changemechangeme
+  BCTF_ALLOWED_HOSTS: localhost,leafeon.bagel.internal
+
+  BCTF_API_AUTHTOKEN: changeme
+
+  BCTF_CTFTIME_CLIENTID: x
+  BCTF_CTFTIME_CLIENTSECRET: x
+
+  BCTF_DB_HOST: beavercds_pg
+  #BCTF_DB_PORT
+  BCTF_DB_USERNAME:
+  BCTF_DB_PASSWORD:
+  BCTF_DB_NAME:
+
+
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: beaverctf-frontend-config
+data:
+  helm_settings.py: |
+    # Add your configuration here
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: beaverctf-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: beaverctf-frontend
+  template:
+    metadata:
+      labels:
+        app: beaverctf-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: ghcr.io/osusec/beavercds-frontend:main
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - secretRef:
+                name: beaverctf-frontend-db
+          volumeMounts:
+            - name: config
+              mountPath: /app/bctf/helm_settings.py
+              subPath: helm_settings.py
+      volumes:
+        - name: config
+          configMap:
+            name: beaverctf-frontend-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: beaverctf-frontend
+spec:
+  selector:
+    app: beaverctf-frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: beaverctf-frontend
+spec:
+  rules:
+    - host: damctf.xyz
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: beaverctf-frontend
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - damctf.xyz
+      secretName: beaverctf-frontend-tls
