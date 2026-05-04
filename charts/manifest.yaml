@@ -46,6 +46,21 @@ spec:
       labels:
         app: beaverctf-frontend
     spec:
+      initContainers:
+        - name: migrations
+          image: ghcr.io/osusec/beavercds-frontend:main
+          command:
+            - sh
+            - -xc
+            - |
+              uv run manage.py makemigrations --noinput
+              uv run manage.py migrate --noinput
+          envFrom:
+            - secretRef:
+                name: beaverctf-db
+            - secretRef:
+                name: beaverctf-secrets
+
       containers:
         - name: frontend
           image: ghcr.io/osusec/beavercds-frontend:main

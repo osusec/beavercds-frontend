@@ -18,9 +18,6 @@ RUN uv sync --locked
 # Copy the project into the image
 COPY . /app
 
-# build migration files for this version
-RUN uv run manage.py makemigrations
-
 USER app
 EXPOSE 8000
 EXPOSE 8001

@@ -20,10 +20,8 @@ services:
       retries: 3
 
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    environment:
+    build: .
+    environment: &django_env
       # BCTF_DEBUG: false
       BCTF_SECRET_KEY: changemechangeme
       BCTF_ALLOWED_HOSTS: localhost,damctf.xyz,leafeon.bagel.internal
@@ -37,9 +35,24 @@ services:
       BCTF_DB_USERNAME: postgres
       BCTF_DB_PASSWORD: password
       BCTF_DB_NAME: rng
-
     ports:
       - 8000:8000
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
+
+  migrations:
+    build: .
+    environment: *django_env
+    command:
+      - sh
+      - -c
+      - |
+        cat bctf/helm_settings.py
+        uv run manage.py makemigrations --noinput
+        uv run manage.py migrate --noinput
     depends_on:
       db:
         condition: service_healthy
