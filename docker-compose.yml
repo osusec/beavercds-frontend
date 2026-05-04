@@ -24,13 +24,20 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      POSTGRES_HOST: db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: rng
+      # BCTF_DEBUG: false
+      BCTF_SECRET_KEY: changemechangeme
+      BCTF_ALLOWED_HOSTS: localhost,damctf.xyz,leafeon.bagel.internal
 
-      CTFTIME_OAUTH_CLIENTID: x
-      CTFTIME_OAUTH_CLIENTSECRET: x
+      BCTF_API_AUTHTOKEN: changemetoo
+      BCTF_CTFTIME_CLIENTID: x
+      BCTF_CTFTIME_CLIENTSECRET: x
+
+      BCTF_DB_HOST: db
+      #BCTF_DB_PORT
+      BCTF_DB_USERNAME: postgres
+      BCTF_DB_PASSWORD: password
+      BCTF_DB_NAME: rng
+
     ports:
       - 8000:8000
     depends_on:
