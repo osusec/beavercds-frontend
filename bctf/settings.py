@@ -190,4 +190,4 @@ CTF_CTFTIME_LINK = ''
 THRESHOLD_SOLVES = 20
 SPONSORS = []
 
-from helm_settings import *
+from .helm_settings import *
