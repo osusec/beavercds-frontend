@@ -10,6 +10,6 @@
     root * static/
     file_server
   }
-	reverse_proxy /api/* localhost:8101
-	reverse_proxy * localhost:8100
+	# reverse_proxy /api/* localhost:8001
+	reverse_proxy * localhost:8002
 }

@@ -23,4 +23,5 @@ RUN uv run manage.py makemigrations
 
 USER app
 EXPOSE 8000
+EXPOSE 8001
 CMD ["tini", "-g", "--", "/app/container-aux/entrypoint.sh"]

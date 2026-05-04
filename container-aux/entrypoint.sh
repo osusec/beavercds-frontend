@@ -6,8 +6,8 @@ set -eux
 uv run python3 manage.py migrate
 
 caddy run --config /app/container-aux/Caddyfile &
-uv run gunicorn --bind 0.0.0.0:8100 bctf.wsgi &
-uv run gunicorn --bind 0.0.0.0:8101 bctf-api.wsgi &
+uv run gunicorn --bind 0.0.0.0:8002 bctf.wsgi &
+uv run gunicorn --bind 0.0.0.0:8001 bctf-api.wsgi &
 
 wait -n
 exit $?
