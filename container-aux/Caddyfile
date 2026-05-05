@@ -1,5 +1,4 @@
 {
-  debug
   admin off
   servers {
     trusted_proxies static private_ranges
@@ -7,6 +6,7 @@
 }
 
 :8000 {
+  log
   handle_path /static/* {
     root * static/
     file_server
