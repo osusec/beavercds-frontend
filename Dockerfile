@@ -20,7 +20,7 @@ RUN uv sync --locked
 COPY . /app
 
 RUN chown -R bctf /app
-USER rctf
+USER bctf
 
 EXPOSE 8000
 EXPOSE 8001
