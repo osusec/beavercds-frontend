@@ -25,12 +25,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env.str('BCTF_SECRET_KEY')
+SECRET_KEY = env.str("BCTF_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool('BCTF_DEBUG', default=False)
+DEBUG = env.bool("BCTF_DEBUG", default=False)
 
-ALLOWED_HOSTS = env.list('BCTF_ALLOWED_HOSTS')
+ALLOWED_HOSTS = env.list("BCTF_ALLOWED_HOSTS")
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
@@ -38,47 +38,46 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 # Application definition
 
 INSTALLED_APPS = [
-    'account',
-    'chals',
-    'django.contrib.auth', # required for resolvestate code, needs to be able to reference the auth_user_model
-    'django.contrib.contenttypes',
+    "account",
+    "chals",
+    "django.contrib.auth",  # required for resolvestate code, needs to be able to reference the auth_user_model
+    "django.contrib.contenttypes",
 ]
 
 MIDDLEWARE = [
-    'bctf-api.middleware.AuthorizationTokenMiddleware',
+    "bctf-api.middleware.AuthorizationTokenMiddleware",
 ]
 
-AUTHORIZATION_TOKEN = env.str('BCTF_API_AUTHTOKEN')
+AUTHORIZATION_TOKEN = env.str("BCTF_API_AUTHTOKEN")
 
 AUTH_USER_MODEL = "account.CTFTeam"
 
-ROOT_URLCONF = 'bctf-api.urls'
+ROOT_URLCONF = "bctf-api.urls"
 
-WSGI_APPLICATION = 'bctf.wsgi.application'
+WSGI_APPLICATION = "bctf.wsgi.application"
 
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env.str('BCTF_DB_NAME', default='bctf'),
-        'USER': env.str('BCTF_DB_USERNAME', default='postgres'),
-        'PASSWORD': env.str('BCTF_DB_PASSWORD'),
-        'HOST': env.str('BCTF_DB_HOST'),
-        'PORT': env.str('BCTF_DB_PORT', default='')
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": env.str("BCTF_DB_NAME", default="bctf"),
+        "USER": env.str("BCTF_DB_USERNAME", default="postgres"),
+        "PASSWORD": env.str("BCTF_DB_PASSWORD"),
+        "HOST": env.str("BCTF_DB_HOST"),
+        "PORT": env.str("BCTF_DB_PORT", default=""),
     }
 }
-
 
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -88,5 +87,4 @@ USE_TZ = True
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

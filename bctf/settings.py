@@ -25,12 +25,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env.str('BCTF_SECRET_KEY')
+SECRET_KEY = env.str("BCTF_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool('BCTF_DEBUG', default=False)
+DEBUG = env.bool("BCTF_DEBUG", default=False)
 
-ALLOWED_HOSTS = env.list('BCTF_ALLOWED_HOSTS')
+ALLOWED_HOSTS = env.list("BCTF_ALLOWED_HOSTS")
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
@@ -38,23 +38,23 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 # Application definition
 
 INSTALLED_APPS = [
-    'account',
-    'chals',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.staticfiles',
-    'markdownify.apps.MarkdownifyConfig',
+    "account",
+    "chals",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.staticfiles",
+    "markdownify.apps.MarkdownifyConfig",
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'bctf.middleware.TimezoneMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "bctf.middleware.TimezoneMiddleware",
 ]
 
 AUTH_USER_MODEL = "account.CTFTeam"
@@ -62,44 +62,44 @@ AUTH_USER_MODEL = "account.CTFTeam"
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
     "account.backends.CTFTime_OAuth_Backend",
-    "account.backends.Token_Backend"
+    "account.backends.Token_Backend",
 ]
 
-LOGIN_URL = reverse_lazy('login')
-LOGIN_REDIRECT_URL = reverse_lazy('profile-home')
-LOGOUT_REDIRECT_URL = '/'
+LOGIN_URL = reverse_lazy("login")
+LOGIN_REDIRECT_URL = reverse_lazy("profile-home")
+LOGOUT_REDIRECT_URL = "/"
 
 
-CTFTIME_OAUTH_CLIENTID = env.str('BCTF_CTFTIME_CLIENTID')
-CTFTIME_OAUTH_CLIENTSECRET = env.str('BCTF_CTFTIME_CLIENTSECRET')
+CTFTIME_OAUTH_CLIENTID = env.str("BCTF_CTFTIME_CLIENTID")
+CTFTIME_OAUTH_CLIENTSECRET = env.str("BCTF_CTFTIME_CLIENTSECRET")
 OAUTH = OAuth()
 OAUTH.register(
-    name='ctftime',
+    name="ctftime",
     client_id=CTFTIME_OAUTH_CLIENTID,
     client_secret=CTFTIME_OAUTH_CLIENTSECRET,
-    access_token_url='https://oauth.ctftime.org/token',
+    access_token_url="https://oauth.ctftime.org/token",
     access_token_params=None,
-    authorize_url='https://oauth.ctftime.org/authorize',
+    authorize_url="https://oauth.ctftime.org/authorize",
     authorize_params=None,
-    api_base_url='https://oauth.ctftime.org/user',
-    client_kwargs={'scope': 'profile team'},
-    token_endpoint_auth_method='client_secret_post'
+    api_base_url="https://oauth.ctftime.org/user",
+    client_kwargs={"scope": "profile team"},
+    token_endpoint_auth_method="client_secret_post",
 )
 
-ROOT_URLCONF = 'bctf.urls'
+ROOT_URLCONF = "bctf.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / "templates"],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-                'bctf.context_processors.ctf_event'
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [BASE_DIR / "templates"],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+                "bctf.context_processors.ctf_event",
             ],
         },
     },
@@ -107,11 +107,11 @@ TEMPLATES = [
 
 MARKDOWNIFY = {
     "default": {
-        "WHITELIST_TAGS": ['p', 'a', 'code'],
+        "WHITELIST_TAGS": ["p", "a", "code"],
         "WHITELIST_ATTRS": [
-            'href',
-            'src',
-            'alt',
+            "href",
+            "src",
+            "alt",
         ],
         "STRIP": True,
         "LINKIFY_TEXT": {
@@ -120,20 +120,20 @@ MARKDOWNIFY = {
     },
 }
 
-WSGI_APPLICATION = 'bctf.wsgi.application'
+WSGI_APPLICATION = "bctf.wsgi.application"
 
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env.str('BCTF_DB_NAME', default='bctf'),
-        'USER': env.str('BCTF_DB_USERNAME', default='postgres'),
-        'PASSWORD': env.str('BCTF_DB_PASSWORD'),
-        'HOST': env.str('BCTF_DB_HOST'),
-        'PORT': env.str('BCTF_DB_PORT', default='')
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": env.str("BCTF_DB_NAME", default="bctf"),
+        "USER": env.str("BCTF_DB_USERNAME", default="postgres"),
+        "PASSWORD": env.str("BCTF_DB_PASSWORD"),
+        "HOST": env.str("BCTF_DB_HOST"),
+        "PORT": env.str("BCTF_DB_PORT", default=""),
     }
 }
 
@@ -143,16 +143,16 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -168,9 +168,9 @@ TOKEN_LENGTH = 64
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -180,18 +180,18 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_URL = "static/"
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-CTF_EVENT_NAME = ''
-CTF_EVENT_START = datetime.fromisoformat('1970-01-01 00:00:00.000+00:00')
-CTF_EVENT_END = datetime.fromisoformat('1970-01-01 00:00:00.000+00:00')
-CTF_CTFTIME_LINK = ''
+CTF_EVENT_NAME = ""
+CTF_EVENT_START = datetime.fromisoformat("1970-01-01 00:00:00.000+00:00")
+CTF_EVENT_END = datetime.fromisoformat("1970-01-01 00:00:00.000+00:00")
+CTF_CTFTIME_LINK = ""
 THRESHOLD_SOLVES = 20
 SPONSORS = []
 
