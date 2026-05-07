@@ -107,7 +107,12 @@ TEMPLATES = [
 
 MARKDOWNIFY = {
     "default": {
-        "WHITELIST_TAGS": ['p', 'code'],
+        "WHITELIST_TAGS": ['p', 'a', 'code'],
+        "WHITELIST_ATTRS": [
+            'href',
+            'src',
+            'alt',
+        ],
         "STRIP": True,
         "LINKIFY_TEXT": {
             "PARSE_URLS": False,
