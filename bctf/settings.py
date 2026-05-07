@@ -11,10 +11,11 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+
+import environ
+from authlib.integrations.django_client import OAuth
 from django.urls import reverse_lazy
 from django.utils.timezone import datetime
-from authlib.integrations.django_client import OAuth
-import environ
 
 env = environ.Env()
 

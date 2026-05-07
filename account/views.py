@@ -1,21 +1,23 @@
-from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
-from django.views import generic, View
-from .models import *
-from chals.models import ChallengeSolve, Challenge
-from .forms import *
-from django.contrib.auth import login, authenticate
 import secrets
-from django.db import IntegrityError
+
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import IntegrityError
 from django.http import (
     HttpResponse,
     HttpResponseBadRequest,
     HttpResponseNotFound,
     JsonResponse,
 )
+from django.shortcuts import redirect, render
+from django.urls import reverse_lazy
+from django.views import View, generic
 
-from bctf.settings import OAUTH, LOGIN_REDIRECT_URL, TOKEN_LENGTH
+from bctf.settings import LOGIN_REDIRECT_URL, OAUTH, TOKEN_LENGTH
+from chals.models import Challenge, ChallengeSolve
+
+from .forms import *
+from .models import *
 
 
 class SignUpView(generic.CreateView):
