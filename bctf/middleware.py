@@ -1,4 +1,5 @@
 from urllib.parse import unquote
+
 try:
     import zoneinfo
 except ImportError:
@@ -11,10 +12,10 @@ class TimezoneMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        tzname = request.COOKIES.get ("timezone")
+        tzname = request.COOKIES.get("timezone")
         try:
             timezone.activate(zoneinfo.ZoneInfo(unquote(tzname)))
         except:
             timezone.deactivate()
-            
+
         return self.get_response(request)
