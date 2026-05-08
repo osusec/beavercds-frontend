@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}First Bloods | {{ event_name }}{% endblock %}
+
+{% block content %}
+
+    <h2 class="mb-4 my-3">First Blood Solves</h2>
+    <div class="container d-flex flex-column mt-4 p-2">
+        {% for solve in firstbloods %}
+            <div class="container d-flex flex-row mx-1">
+                <p class="flex-grow-1"><span class="fw-bold">{{ solve.team_name }}: &nbsp;</span>{{ solve.challenge_name }}</p>
+                <p data-datetime="{{ solve.solvetime|date:'c' }}" data-bs-toggle="tooltip" data-bs-title="{{ solve.solvetime|date:'M j, Y' }}">{{ solve.solvetime|date:"D" }} {{ solve.solvetime|time:"g:i A e" }}</p>
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}
