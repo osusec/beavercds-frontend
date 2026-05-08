@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from chals.models import *
 from account.models import *
-from django.db.models import Exists, OuterRef, Count, Sum, Window, F, Case, When, Subquery
+from django.db.models import Exists, OuterRef, Count, Sum, Window, F, Case, When, Subquery, Min
 from django.db.models.functions import Rank
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
 from django.db import transaction
@@ -92,3 +92,27 @@ class ScoresFeed (CTFStartMixin, View):
         )
 
         return JsonResponse({"standings": list(score_entries)})
+
+class FirstBlood (CTFStartMixin, View):
+    def get (self, request):
+        min_per_chal = Subquery(
+            ChallengeSolve.objects
+            .filter(challenge=OuterRef('challenge'))
+            .order_by('time_of_solve')
+            .values('time_of_solve')[:1]
+        )
+
+        firstbloods = (
+            ChallengeSolve.objects
+            .annotate(min_ts=min_per_chal)
+            .filter(time_of_solve=F('min_ts'))
+            .order_by('-time_of_solve')
+        )
+
+        firstbloods = firstbloods.values(
+            challenge_name=F("challenge__name"),
+            team_name=F("team__team_name"),
+            solvetime=F("time_of_solve")
+        )
+
+        return render(request, "firstbloods.html", {'firstbloods': firstbloods})
