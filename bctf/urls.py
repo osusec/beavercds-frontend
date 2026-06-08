@@ -14,7 +14,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
+
 from django.urls import path, include
 from .views import *
 from django.views.decorators.csrf import csrf_exempt
@@ -23,8 +23,9 @@ from django.views.decorators.csrf import csrf_exempt
 urlpatterns = [
     path ('', FrontPage.as_view(), name='bctf-home'),
     path ('scores/', Scores.as_view(), name='scoreboard'),
-    path ('scores/feed/', ScoresFeed.as_view(), name='scoreboard-feed'),
+    path ('scores.json', ScoresFeed.as_view(), name='scoreboard-feed'), # TODO: change on ctftime
     path ('firstblood/', FirstBlood.as_view(), name='first-bloods'),
     path ('account/', include ('account.urls')),
     path ('chals/', include ('chals.urls')),
+    path ('admin/', include ('admin.urls')),
 ]

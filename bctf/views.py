@@ -93,6 +93,7 @@ class ScoresFeed (CTFStartMixin, View):
 
         return JsonResponse({"standings": list(score_entries)})
 
+# TODO: remove
 class FirstBlood (CTFStartMixin, View):
     def get (self, request):
         min_per_chal = Subquery(

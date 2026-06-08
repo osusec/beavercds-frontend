@@ -1,11 +1,13 @@
 {% extends 'base.html' %}
 
-{% block title %}Scoreboard | {{ event_name }}{% endblock %}
+{% block title %}Teams | Admin Panel | {{ event_name }}{% endblock %}
 
 {% block content %}
 
-    <h2 class="mb-4 my-3">Scoreboard</h2>
-    <div class="container">
+    <h2 class="mb-4 my-3">{{ num_teams }} Teams | Admin Panel</h2>
+    <a href="{% url 'scoreboard-feed' %}" download  class="btn btn-outline-secondary my-1" type="button">Download Scores</a>
+    <div class="container mb-4">
+        <h3 class="mb-4">Top Teams</h3>
         <table class="table table-striped w-100">
             <thead>
                 <tr>
@@ -32,6 +34,35 @@
                             {% endif %}
                         </td>
                         <td>{{ entry.sum_points }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="container d-flex flex-column mt-4">
+        <h3 class="mb-4">Contact Emails</h3>
+        <table class="table table-striped w-100">
+            <thead>
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col">Team</th>
+                    <th scope="col">Emails</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for team, emails in teams_with_emails %}
+                    <tr>
+                        <td></td>
+                        <td>{{ team.team_name }}</td>
+                        <td>
+                            {% if emails|length > 0 %}
+                                {% for email in emails %}
+                                    <p>{{email.email}}</p>
+                                {% endfor %}
+                            {% else %}
+                                <p class="text-danger">None provided</p>
+                            {% endif %}
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
