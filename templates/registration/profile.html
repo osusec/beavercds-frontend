@@ -5,7 +5,7 @@
 {% block content %}
 
     <h2 class="mb-4 my-3">{{ user.team_name }}
-        {% if ctftime %} 
+        {% if user.ctftime_bool %} 
             <svg width="24" height="24" version="1.1" viewBox="0 0 24 24" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
             <style type="text/css">
                 .st0{fill:#E3000B;}
@@ -16,6 +16,7 @@
             </g>
             </svg>
         {% endif %}
+        <!-- TODO: clean up embedded svgs-->
     </h2>
     <div class="container d-flex flex-column mb-4 p-2">
         <h3 class="mb-4">Access Links</h3>

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Panel | {{ event_name }}{% endblock %}
+
+{% block content %}
+
+    <!-- TODO: remove this page -->
+
+    <h2 class="mb-4 my-3">Admin Panel
+    </h2>
+    <div class="container d-flex flex-column mb-4 p-2">
+
+        <a href="{% url 'admin-chals' %}">Chals</a>
+        <a href="{% url 'admin-solves' %}">Solves</a>
+        <a href="{% url 'admin-teams' %}">Teams</a>
+        
+    </div>
+
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Solves | Admin Panel | {{ event_name }}{% endblock %}
+
+{% block content %}
+
+    <h2 class="mb-4 my-3">Solves | Admin Panel</h2>
+    <div class="container mb-4">
+        <h3 class="mb-4">First Bloods</h3>
+        <table class="table table-striped w-100">
+            <thead>
+                <tr>
+                    <th scope="col">Challenge</th>
+                    <th scope="col">Time</th>
+                    <th scope="col">Team</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for blood in firstbloods %}
+                    <tr>
+                        <td>{{ blood.challenge_name }} </td>
+                        <td>{{ blood.solvetime }}</td>
+                        <td>{{ blood.team_name }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="container my-4">
+        <h3 class="mb-4">Number of Solves</h3>
+        <table class="table table-striped w-100">
+            <thead>
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col">Challenge</th>
+                    <th scope="col"># Solves</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for challenge in number_solves %}
+                    <tr>
+                        <td></td>
+                        <td>{{ challenge.challenge_name }}</td>
+                        <td>{{ challenge.solves }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="container mt-4">
+        <h3 class="mb-4">All Solves</h3>
+        <table class="table table-striped w-100">
+            <thead>
+                <tr>
+                    <th scope="col">Team</th>
+                    <th scope="col">Time</th>
+                    <th scope="col">Challenge</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for solve in all_solves %}
+                    <tr>
+                        <td>{{ solve.team_name }} </td>
+                        <td>{{ solve.solvetime|date:"D" }} {{ solve.solvetime|time:"g:i A e" }}</td>
+                        <td>{{ solve.challenge_name }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!-- TODO: style tables, center some columns -->
+
+{% endblock %}
