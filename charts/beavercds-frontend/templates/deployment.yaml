@@ -69,15 +69,22 @@ spec:
               path: /
               port: http
 
-          {{- with .Values.volumeMounts }}
           volumeMounts:
+            - name: django-settings
+              mountPath: /app/bctf/helm_settings.py
+              subPath: helm_settings.py
+              readOnly: true
+            {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
-          {{- end }}
+            {{- end }}
 
-      {{- with .Values.volumes }}
       volumes:
+        - name: django-settings
+          configMap:
+            name: {{ include "beavercds-frontend.fullname" . }}-django-settings
+        {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- end }}
 
       {{- with .Values.nodeSelector }}
       nodeSelector:
