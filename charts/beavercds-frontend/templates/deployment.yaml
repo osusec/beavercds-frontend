@@ -27,7 +27,10 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "beavercds-frontend.serviceAccountName" . }}
+
+      # we don't need access to the k8s api
+      automountServiceAccountToken: false
+
       {{- with .Values.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
