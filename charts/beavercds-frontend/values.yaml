@@ -2,7 +2,38 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-# This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
+# Settings to pass as additional config.py
+config: |
+  from django.utils.timezone import datetime
+
+  CTF_EVENT_NAME = 'My CTF'
+
+  # ISO 8601 format, UTC timezone
+  CTF_EVENT_START = datetime.fromisoformat('1979-01-01 00:00:00')
+  CTF_EVENT_END = datetime.fromisoformat('1979-01-03 00:00:00')
+
+  # Social button links
+  CTF_CTFTIME_LINK = ''
+  CTF_GITLAB_LINK = ''
+  CTF_DISCORD_LINK = ''
+  CTF_EMAIL_LINK = ''
+  CTF_BSKY_LINK = ''
+
+  SPONSORS = [
+      {
+          'name': 'Fake Corp',
+          'link': 'https://fake.example',
+          'logo_link': 'https://fake.example/assets/logo.png'
+      }
+  ]
+
+  # Number of solves required for a challenge to reach its minimum points using
+  # dynamic scoring
+  THRESHOLD_SOLVES = 20
+
+
+# Deployment/Pod settings
+# scoreboard:
 replicaCount: 1
 
 image:
