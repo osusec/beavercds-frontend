@@ -1,9 +1,11 @@
 apiVersion: apps/v1
 kind: Deployment
+
 metadata:
   name: {{ include "beavercds-frontend.fullname" . }}
   labels:
     {{- include "beavercds-frontend.labels" . | nindent 4 }}
+
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
@@ -11,6 +13,7 @@ spec:
   selector:
     matchLabels:
       {{- include "beavercds-frontend.selectorLabels" . | nindent 6 }}
+
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -35,38 +38,47 @@ spec:
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+
       containers:
         - name: {{ .Chart.Name }}
-          {{- with .Values.securityContext }}
-          securityContext:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          ports:
-            - name: http
-              containerPort: {{ .Values.service.port }}
-              protocol: TCP
-          {{- with .Values.livenessProbe }}
-          livenessProbe:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- with .Values.readinessProbe }}
-          readinessProbe:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
+
           {{- with .Values.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+
+          ports:
+            - name: frontend
+              containerPort: 8000
+              protocol: TCP
+
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+          # initial basic probes against the frontpage
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+
           {{- with .Values.volumeMounts }}
           volumeMounts:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+
       {{- with .Values.volumes }}
       volumes:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
