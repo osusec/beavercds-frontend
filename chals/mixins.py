@@ -2,7 +2,7 @@ from django.utils import timezone
 from django.shortcuts import render
 from django.http import JsonResponse
 from functools import wraps
-from bctf.settings import CTF_EVENT_START, CTF_EVENT_END
+from bctf.settings import CTF_EVENT_START_PARSED, CTF_EVENT_END_PARSED
 
 
 class CTFStartMixin:
@@ -24,7 +24,7 @@ def ctf_start():
 
 class CTFEndMixin:
     def dispatch(self, request, *args, **kwargs):
-        if timezone.now() > CTF_EVENT_END:
+        if timezone.now() > CTF_EVENT_END_PARSED:
             return JsonResponse({'errors':['The CTF has ended.']}, status=403)
         return super().dispatch(request, *args, **kwargs)
 
@@ -32,7 +32,7 @@ def ctf_end():
     def decorator(view_func):
         @wraps(view_func)
         def wrapper(request, *args, **kwargs):
-            if timezone.now() > CTF_EVENT_END:
+            if timezone.now() > CTF_EVENT_END_PARSED:
                 return JsonResponse({'errors':['Flag was incorrect.']}, status=403)
             return view_func(request, *args, **kwargs)
         return wrapper

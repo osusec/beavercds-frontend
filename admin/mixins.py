@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from functools import wraps
-from bctf.settings import CTF_EVENT_START, CTF_EVENT_END
+from bctf.settings import CTF_EVENT_START_PARSED, CTF_EVENT_END_PARSED
 from django.core.exceptions import PermissionDenied
 
 
