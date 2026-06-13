@@ -8,8 +8,8 @@ spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: http
+      name: frontend
+      targetPort: frontend
       protocol: TCP
-      name: http
   selector:
     {{- include "beavercds-frontend.selectorLabels" . | nindent 4 }}
