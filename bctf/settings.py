@@ -189,8 +189,8 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CTF_EVENT_NAME = ''
-CTF_EVENT_START = datetime.fromisoformat('1970-01-01 00:00:00.000+00:00')
-CTF_EVENT_END = datetime.fromisoformat('1970-01-01 00:00:00.000+00:00')
+CTF_EVENT_START = '1970-01-01 00:00:00.000+00:00'
+CTF_EVENT_END = '1970-01-01 00:00:00.000+00:00'
 CTF_CTFTIME_LINK = ''
 CTF_GITLAB_LINK = ''
 CTF_DISCORD_LINK = ''
@@ -200,3 +200,6 @@ THRESHOLD_SOLVES = 20
 SPONSORS = []
 
 from .helm_settings import *
+
+CTF_EVENT_START_PARSED = datetime.fromisoformat(CTF_EVENT_START_PARSED)
+CTF_EVENT_END_PARSED = datetime.fromisoformat(CTF_EVENT_END_PARSED)
