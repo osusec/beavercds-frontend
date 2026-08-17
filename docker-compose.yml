@@ -11,11 +11,11 @@ services:
     image: postgres:18
     environment:
       POSTGRES_PASSWORD: notaverysecurepassword
-      POSTGRES_DB: rng
+      POSTGRES_DB: bctf-db
     volumes:
       - postgres_data:/var/lib/postgresql
     healthcheck:
-      test: pg_isready -U postgres -d rng
+      test: pg_isready -U postgres -d bctf-db
       interval: 5s
       timeout: 3s
       retries: 3
@@ -42,7 +42,7 @@ services:
       #BCTF_DB_PORT
       BCTF_DB_USERNAME: postgres
       BCTF_DB_PASSWORD: notaverysecurepassword
-      BCTF_DB_NAME: rng
+      BCTF_DB_NAME: bctf-db
     depends_on:
       # Wait for migrations to complete first
       migrations:
