@@ -107,11 +107,30 @@ spec:
           envFrom:
             - secretRef:
                 name: beaverctf-secrets
-          env: *db_cred_env
+          env:
+            <<: *db_cred_env
+            APP: bctf
           volumeMounts:
             - name: config
               mountPath: /app/bctf/helm_settings.py
               subPath: helm_settings.py
+
+        - name: frontend-api
+          image: ghcr.io/osusec/beavercds-frontend:main
+          ports:
+            - name: app
+              containerPort: 8000
+          envFrom:
+            - secretRef:
+                name: beaverctf-secrets
+          env:
+            <<: *db_cred_env
+            APP: bctf-api
+          volumeMounts:
+            - name: config
+              mountPath: /app/bctf/helm_settings.py
+              subPath: helm_settings.py
+
       volumes:
         - name: config
           configMap:
