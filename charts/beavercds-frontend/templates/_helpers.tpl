@@ -49,3 +49,35 @@ Selector labels
 app.kubernetes.io/name: {{ include "beavercds-frontend.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
+
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "beavercds-frontend.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create -}}
+    {{ default (include "beavercds-frontend.fullname" .) .Values.serviceAccount.name }}
+{{- else -}}
+    {{ default "default" .Values.serviceAccount.name }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Common wait-for-db initcontainer
+*/}}
+{{- define "beavercds-frontend.initWaitForPostgres" -}}
+name: wait-for-postgres
+image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+imagePullPolicy: {{ .Values.image.pullPolicy }}
+
+command: ["python3", "manage.py", "wait4db"]
+
+volumeMounts:
+  - name: django-settings
+    mountPath: /app/bctf/helm_settings.py
+    subPath: helm_settings.py
+    readOnly: true
+  {{- with .Values.volumeMounts }}
+  {{- toYaml . | nindent 12 }}
+  {{- end }}
+
+{{- end }}
