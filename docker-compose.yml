@@ -78,10 +78,11 @@ services:
       target: development
     labels:
       caddy: bctf.localhost
-      caddy.reverse_proxy: "/api/* {{upstreams 8000}}"
+      caddy.reverse_proxy: "/api/* {{upstreams 8001}}"
     environment:
       <<: *django_env
       APP: bctf-api
+      PORT: 8001
     depends_on:
       migrations:
         condition: service_completed_successfully

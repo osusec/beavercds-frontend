@@ -31,8 +31,12 @@ COPY . .
 # Default to bctf app but allow overriding for bctf-api via envvar.
 ARG APP=bctf
 ENV APP=${APP}
+ARG PORT=8000
+ENV PORT=${PORT}
 
-CMD python manage.py runserver --settings ${APP}.settings 0.0.0.0:8000
+EXPOSE ${PORT}
+
+CMD python manage.py runserver --settings "${APP}.settings" "0.0.0.0:${PORT}"
 
 # ------
 
@@ -57,11 +61,13 @@ WORKDIR /app
 COPY --from=builder /app/.venv /app/.venv
 COPY . .
 
-EXPOSE 8000
-
 # Default to bctf app but allow overriding for bctf-api via envvar.
 ARG APP=bctf
 ENV APP=${APP}
+ARG PORT=8000
+ENV PORT=${PORT}
+
+EXPOSE ${PORT}
 
 # Run Gunicorn as the production WSGI server.
-CMD gunicorn "${APP}.wsgi" --bind "0.0.0.0:8000"
+CMD gunicorn "${APP}.wsgi" --bind "0.0.0.0:${PORT}"
