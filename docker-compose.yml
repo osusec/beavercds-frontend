@@ -2,10 +2,15 @@ services:
   caddy:
     image: lucaslorentz/caddy-docker-proxy:alpine
     ports:
+      - 80:80
+      - 443:443
       - 8000:8000
     volumes:
       - ${DOCKER_SOCK:-/var/run/docker.sock}:/var/run/docker.sock:z
       - caddy_data:/data
+    labels:
+      caddy.local_certs:
+      caddy.skip_install_trust:
 
   db:
     image: postgres:18
@@ -25,14 +30,14 @@ services:
       context: .
       target: development
     labels:
-      caddy: :8000
+      caddy: bctf.localhost
       caddy.reverse_proxy: "{{upstreams 8000}}"
     environment: &django_env
       # Enable Django debug errors and hot-reload
       BCTF_DEBUG: 'True'
 
       BCTF_SECRET_KEY: changemechangeme
-      BCTF_ALLOWED_HOSTS: localhost,my.testing.domain
+      BCTF_ALLOWED_HOSTS: localhost,bctf.localhost
 
       BCTF_API_AUTHTOKEN: changemetoo
       BCTF_CTFTIME_CLIENTID: x
@@ -72,7 +77,7 @@ services:
       context: .
       target: development
     labels:
-      caddy: :8000
+      caddy: bctf.localhost
       caddy.reverse_proxy: "/api/* {{upstreams 8000}}"
     environment:
       <<: *django_env
