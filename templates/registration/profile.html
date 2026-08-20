@@ -50,12 +50,15 @@
 
         <form class="bcds-form input-group d-flex flex-row mb-2" id="change_bracket" method="post" action="{% url 'change_bracket' %}">
             <select class="form-select form-control mx-1 flex-grow-1" name="bracket" id="selectBracketGroup">
-                    <option {% if not user.bracket %}selected{% endif %} value="">Open</option>
+                    <option class="bracket-select" data-password-id="bracket_pw_open" {% if not user.bracket %}selected{% endif %} value="">Open</option>
                 {% for bracket in brackets %}
-                    <option {% if user.bracket == bracket %}selected{% endif %} value="{{ bracket.pk }}">{{ bracket.bracket_name }}</option>
+                    <option class="bracket-select" data-password-id="bracket_pw_{{bracket.pk}}" {% if user.bracket == bracket %}selected{% endif %} value="{{ bracket.pk }}">{{ bracket.bracket_name }}</option>
                 {% endfor %}
             </select>
-            <input type="text" id="bracket-password" name="bracket_password" class="form-control border-secondary mx-1" placeholder="Password">
+                <input type="password" id="bracket_pw_open" name="bracket_password" class="bracket_password form-control border-secondary mx-1" disabled placeholder="No password needed." {% if user.bracket %}hidden{% endif %}>
+            {% for bracket in brackets %}
+                <input type="password" id="bracket_pw_{{bracket.pk}}" name="bracket_password" class="bracket_password form-control border-secondary mx-1" {% if bracket.open_bracket %}disabled placeholder="No password needed."{% else %}placeholder="Password"{% endif %} {% if user.bracket != bracket %}hidden{% endif %}>
+            {% endfor %}
             {% csrf_token %}
             <button class="btn btn-outline-secondary mx-1 bcds-copy-btn" form="change_bracket" type="submit">Change bracket</button>
         </form>
