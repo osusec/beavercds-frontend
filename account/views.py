@@ -9,7 +9,7 @@ import secrets
 from django.db import IntegrityError
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
-from django.contrib.auth.hashers import check_password
+from django.contrib.auth.hashers import make_password, check_password
 
 from bctf.settings import OAUTH, LOGIN_REDIRECT_URL, TOKEN_LENGTH
 
@@ -165,6 +165,6 @@ class ChangeBracket (LoginRequiredMixin, View):
                 team.save()
                 return JsonResponse({'redirect': reverse_lazy('profile-home')})
             else:
-                return JsonResponse({'errors': ['Incorrect password to join bracket.']})
+                return JsonResponse({'errors': ['Incorrect password to join bracket.']}, status=401)
         else:
             return JsonResponse({'errors':['Choose a valid bracket.']}, status=404)
