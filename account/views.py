@@ -9,6 +9,7 @@ import secrets
 from django.db import IntegrityError
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
+from django.contrib.auth.hashers import check_password
 
 from bctf.settings import OAUTH, LOGIN_REDIRECT_URL, TOKEN_LENGTH
 
@@ -41,7 +42,12 @@ class ProfilePage (LoginRequiredMixin, View):
             .order_by('-time_of_solve')
         )
 
-        return render (request, "registration/profile.html", {'ctftime_team': ctftime_bool, 'access_tokens': access_tokens, 'contact_emails': contact_emails, 'solves': solves, 'addcontact_form': AddContactEmailForm})
+        brackets = (
+            CTFTeam_Bracket.objects
+            .all()
+        )
+
+        return render (request, "registration/profile.html", {'access_tokens': access_tokens, 'contact_emails': contact_emails, 'solves': solves, 'brackets': brackets})
 
 
 class OAuth_Step1 (View):
@@ -142,4 +148,23 @@ class DeleteContactEmail (LoginRequiredMixin, View):
             return JsonResponse({'redirect': reverse_lazy('profile-home')})
         else:
             return JsonResponse({'errors':['Email not found.']}, status=404)
+
+
+class ChangeBracket (LoginRequiredMixin, View):
+    def post (self, request):
+        team = request.user
         
+        form = ChangeBracketForm(request.POST)
+        if form.is_valid():
+            bracket = form.cleaned_data['bracket']
+            entered_pw = form.cleaned_data['bracket_password']
+
+            if bracket is None or bracket.open_bracket or check_password(entered_pw, bracket.access_hash):
+                # Authorize the change to the new bracket
+                team.bracket = bracket
+                team.save()
+                return JsonResponse({'redirect': reverse_lazy('profile-home')})
+            else:
+                return JsonResponse({'errors': ['Incorrect password to join bracket.']})
+        else:
+            return JsonResponse({'errors':['Choose a valid bracket.']}, status=404)

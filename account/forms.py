@@ -35,3 +35,7 @@ class RemoveContactEmailForm (forms.Form):
     def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['email'].queryset = CTFTeam_ContactEmails.objects.filter(team=user)
+
+class ChangeBracketForm (forms.Form):
+    bracket = forms.ModelChoiceField(queryset=CTFTeam_Bracket.objects.all(), required=False, empty_label="Open")
+    bracket_password = forms.CharField(required=False)
