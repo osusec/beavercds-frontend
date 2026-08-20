@@ -24,7 +24,7 @@
 
         {% for token in access_tokens %}
             <div class="input-group mb-2">
-                <input type="text" id="link_{{ token.pk }}" class="form-control border-secondary mx-1" name="submitted_flag" placeholder="Link" value="{{ request.scheme }}://{{ request.get_host }}{% url 'token_auth' %}{% querystring token=token.token %}">
+                <input type="text" id="link_{{ token.pk }}" class="form-control border-secondary mx-1" placeholder="Link" value="{{ request.scheme }}://{{ request.get_host }}{% url 'token_auth' %}{% querystring token=token.token %}">
                 <button class="btn btn-outline-secondary mx-1 bcds-copy-btn" type="button" data-link-id="link_{{ token.pk }}" >Copy</button>
                 <form class="bcds-form" id="delete_{{ token.pk }}" method="post" action="{% url 'delete_token' %}" hidden>
                     {% csrf_token %}
@@ -42,6 +42,23 @@
             <button class="btn btn-outline-secondary w-100" form="create_token" type="submit" {% if access_tokens.count >= 4 %}disabled=""{% endif %}>Create Link</button>
             </div>
         </div>
+    </div>
+
+    <div class="container d-flex flex-column my-4 p-2">
+        <h3 class="mb-4">Change Bracket</h3>
+        <p>You are currently competing in the <b>{% if user.bracket %}{{ user.bracket.bracket_name }}{% else %}Open{% endif %}</b> bracket.</p>
+
+        <form class="bcds-form input-group d-flex flex-row mb-2" id="change_bracket" method="post" action="{% url 'change_bracket' %}">
+            <select class="form-select form-control mx-1 flex-grow-1" name="bracket" id="selectBracketGroup">
+                    <option {% if not user.bracket %}selected{% endif %} value="">Open</option>
+                {% for bracket in brackets %}
+                    <option {% if user.bracket == bracket %}selected{% endif %} value="{{ bracket.pk }}">{{ bracket.bracket_name }}</option>
+                {% endfor %}
+            </select>
+            <input type="text" id="bracket-password" name="bracket_password" class="form-control border-secondary mx-1" placeholder="Password">
+            {% csrf_token %}
+            <button class="btn btn-outline-secondary mx-1 bcds-copy-btn" form="change_bracket" type="submit">Change bracket</button>
+        </form>
     </div>
 
     <div class="container d-flex flex-column my-4 p-2">
