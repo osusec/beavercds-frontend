@@ -10,4 +10,5 @@ urlpatterns = [
     #  this is following API convention
     path ('api/checkaccess', CheckAccess.as_view(), name='check-access'),
     path ('api/resolvestate', ResolveState.as_view(), name='resolve-state'),
+    path ('api/updatebrackets', UpdateBrackets.as_view(), name='update-brackets'),
 ]
