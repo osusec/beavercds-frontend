@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
 from django.db.models import Exists, OuterRef, Count, Sum, Window, F, Case, When, Subquery, Min
@@ -7,6 +8,8 @@ from bctf.settings import THRESHOLD_SOLVES
 from .mixins import AdminRequiredMixin
 from chals.models import *
 from account.models import *
+from .forms import *
+from django.http import JsonResponse
 
 
 # Create your views here.
@@ -117,6 +120,31 @@ class AdminTeams (LoginRequiredMixin, AdminRequiredMixin, View):
 
         num_teams = CTFTeam.objects.all().count()
 
-        return render (request, 'admin/teams.html', {'scores': score_entries.filter(place__lte=3), 'teams_with_emails': teams_with_emails, 'num_teams': num_teams})
+        brackets = (
+            CTFTeam_Bracket.objects
+            .all()
+        )
+
+        return render (request, 'admin/teams.html', {'scores': score_entries.filter(place__lte=10), 'teams_with_emails': teams_with_emails, 'num_teams': num_teams, 'brackets': brackets})
 
 # TODO: make sure only active challenges are being retrieved
+
+
+class ChangeBracketAdm (LoginRequiredMixin, AdminRequiredMixin, View):
+    def post (self, request):
+        admin_team = request.user
+
+        form = ChangeBracketAdmForm(request.POST)
+        if form.is_valid():
+            team = form.cleaned_data['team']
+            bracket = form.cleaned_data['bracket']
+
+            team.bracket = bracket
+            team.save()
+            return JsonResponse({'redirect': reverse_lazy('admin-teams')})
+        else:
+            errors = []
+            for field,err in form.errors.items():
+                for inst in err:
+                    errors.append(inst)
+            return JsonResponse({'errors':errors}, status=400)
