@@ -12,4 +12,5 @@ urlpatterns = [
     path ('chals/', AdminChals.as_view(), name='admin-chals'),
     path ('solves/', AdminSolves.as_view(), name='admin-solves'),
     path ('teams/', AdminTeams.as_view(), name='admin-teams'),
+    path ('teams/changebracket/', ChangeBracketAdm.as_view(), name='change_bracket_adm'),
 ]

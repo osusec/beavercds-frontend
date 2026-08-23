@@ -4,7 +4,7 @@
 
 {% block content %}
 
-    <h2 class="mb-4 my-3">{{ num_teams }} Teams | Admin Panel</h2>
+    <h2 class="mb-4 my-3">{{ num_teams }} Team{{ num_teams|pluralize }} | Admin Panel</h2>
     <a href="{% url 'scoreboard-feed' %}" download  class="btn btn-outline-secondary my-1" type="button">Download Scores</a>
     <div class="container mb-4">
         <h3 class="mb-4">Top Teams</h3>
@@ -40,13 +40,16 @@
         </table>
     </div>
     <div class="container d-flex flex-column mt-4">
-        <h3 class="mb-4">Contact Emails</h3>
+        <h3 class="mb-4">Team Management</h3>
         <table class="table table-striped w-100">
             <thead>
                 <tr>
                     <th scope="col"></th>
                     <th scope="col">Team</th>
-                    <th scope="col">Emails</th>
+                    <th scope="col"><!-- Collapse emails --></th>
+                    <th scope="col">Contact Emails</th>
+                    <th scope="col"><!-- Edit bracket button --></th>
+                    <th scope="col">Bracket</th>
                 </tr>
             </thead>
             <tbody>
@@ -54,14 +57,43 @@
                     <tr>
                         <td></td>
                         <td>{{ team.team_name }}</td>
+                        <td class="text-end">
+                            {% if emails|length > 1 %}
+                                <i class="bi bi-chevron-down btn btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#teamEmailsCollapse-{{ team.pk }}" aria-expanded="false" aria-controls="teamEmailsCollapse-{{ team.pk }}"></i>
+                            {% endif %}
+                        </td>
                         <td>
                             {% if emails|length > 0 %}
-                                {% for email in emails %}
-                                    <p>{{email.email}}</p>
-                                {% endfor %}
+                                <p>{{ emails.0.email }}</p>
+                                <div class="collapse" id="teamEmailsCollapse-{{team.pk}}">
+                                    {% for email in emails|slice:"1:" %}
+                                        <p>{{email.email}}</p>
+                                    {% endfor %}
+                                </div>
                             {% else %}
                                 <p class="text-danger">None provided</p>
                             {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#teamBracketCollapse-{{ team.pk }}" aria-expanded="false" aria-controls="teamBracketCollapse-{{ team.pk }}"><i class="bi bi-pen"></i></button>
+                        </td>
+                        <td>
+                            {% if team.bracket %}{{ team.bracket.bracket_name }}{% else %}Open{% endif %}
+                        </td>
+                    </tr>
+                    <tr class="collapse" id="teamBracketCollapse-{{ team.pk }}">
+                        <td colspan="6">
+                            <form class="bcds-form input-group d-flex flex-row my-2" method="post" action="{% url 'change_bracket_adm' %}">
+                                <select class="form-select form-control mx-1" name="bracket" id="selectBracketGroup">
+                                        <option {% if not team.bracket %}selected{% endif %} value="">Open</option>
+                                    {% for bracket in brackets %}
+                                        <option {% if team.bracket == bracket %}selected{% endif %} value="{{ bracket.pk }}">{{ bracket.bracket_name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <input type="hidden" name="team" value="{{ team.pk }}">
+                                {% csrf_token %}
+                                <button class="btn btn-outline-secondary mx-1" type="submit">Change bracket</button>
+                            </form>
                         </td>
                     </tr>
                 {% endfor %}

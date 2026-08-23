@@ -60,7 +60,7 @@
                 <input type="password" id="bracket_pw_{{bracket.pk}}" name="bracket_password" class="bracket_password form-control border-secondary mx-1" {% if bracket.open_bracket %}disabled placeholder="No password needed."{% else %}placeholder="Password"{% endif %} {% if user.bracket != bracket %}hidden{% endif %}>
             {% endfor %}
             {% csrf_token %}
-            <button class="btn btn-outline-secondary mx-1 bcds-copy-btn" form="change_bracket" type="submit">Change bracket</button>
+            <button class="btn btn-outline-secondary mx-1 bcds-copy-btn" type="submit">Change bracket</button>
         </form>
     </div>
 
