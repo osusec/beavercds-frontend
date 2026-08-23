@@ -32,6 +32,9 @@ class CTFTime_OAuth_Backend (BaseBackend):
             existing_ctftime = CTFTime_Team.objects.get(pk=oauth_user_information['team']['id'])
             existing_team = existing_ctftime.team
 
+            if not existing_team.is_active:
+                return None
+
             team_emails = CTFTeam_ContactEmails.objects.filter(team=existing_team, email=oauth_user_information['email'])
             if team_emails.count() == 0:
                 new_team_email = CTFTeam_ContactEmails (
@@ -46,7 +49,8 @@ class CTFTime_OAuth_Backend (BaseBackend):
             # Register new team
             new_team = CTFTeam (
                 team_name=oauth_user_information['team']['name'],
-                ctftime_bool=True
+                ctftime_bool=True,
+                is_active=True
             )
             new_team.set_unusable_password()
             new_ctftime = CTFTime_Team (
@@ -66,7 +70,7 @@ class CTFTime_OAuth_Backend (BaseBackend):
 
     def get_user (self, team_name):
         try:
-            return CTFTeam.objects.get(pk=team_name)
+            return CTFTeam.objects.filter(is_active=True).get(pk=team_name)
         except CTFTeam.DoesNotExist:
             return None
 
@@ -74,7 +78,7 @@ class CTFTime_OAuth_Backend (BaseBackend):
 class Token_Backend (BaseBackend):
     def authenticate (self, request, token=None):
         try:
-            team_token_obj = CTFTeam_LongtermTokens.objects.get(pk=token)
+            team_token_obj = CTFTeam_LongtermTokens.objects.filter(team__is_active=True).get(pk=token)
             return team_token_obj.team
         except CTFTeam_LongtermTokens.DoesNotExist:
             return None
@@ -82,6 +86,6 @@ class Token_Backend (BaseBackend):
 
     def get_user (self, team_name):
         try:
-            return CTFTeam.objects.get(pk=team_name)
+            return CTFTeam.objects.filter(is_active=True).get(pk=team_name)
         except CTFTeam.DoesNotExist:
             return None

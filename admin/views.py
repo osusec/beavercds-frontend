@@ -91,6 +91,7 @@ class AdminTeams (LoginRequiredMixin, AdminRequiredMixin, View):
             .values('num_solves')
         )
 
+        # TODO: ensure this is only counting activated teams
         score_entries = (CTFTeam.objects
             .annotate (sum_points=Sum(
                 Case(
@@ -129,8 +130,6 @@ class AdminTeams (LoginRequiredMixin, AdminRequiredMixin, View):
 
 class ChangeBracketAdm (LoginRequiredMixin, AdminRequiredMixin, View):
     def post (self, request):
-        admin_team = request.user
-
         form = ChangeBracketAdmForm(request.POST)
         if form.is_valid():
             team = form.cleaned_data['team']
@@ -145,3 +144,40 @@ class ChangeBracketAdm (LoginRequiredMixin, AdminRequiredMixin, View):
                 for inst in err:
                     errors.append(inst)
             return JsonResponse({'errors':errors}, status=400)
+
+class DeactivateTeam (LoginRequiredMixin, AdminRequiredMixin, View):
+    def post (self, request):
+        self_team = request.user
+
+        form = ActivateDeactivateTeamForm(request.POST)
+        if form.is_valid():
+            team_d = form.cleaned_data['team']
+            available_admins = CTFTeam.objects.filter(is_admin=True, is_active=True).count()
+
+            if team_d == self_team:
+                return JsonResponse({'errors': ['Cannot deactivate self.']}, status=400)
+            if available_admins <= 1:
+                return JsonResponse({'errors': ['Cannot deactivate the last remaining admin.']}, status=400)
+
+            team_d.is_active = False
+            team_d.save()
+            return JsonResponse({'redirect': reverse_lazy('admin-teams')})
+        else:
+            return JsonResponse({'errors':['Team not found.']}, status=404)
+
+class ActivateTeam (LoginRequiredMixin, AdminRequiredMixin, View):
+    def post (self, request):
+        self_team = request.user
+
+        form = ActivateDeactivateTeamForm(request.POST)
+        if form.is_valid():
+            team_a = form.cleaned_data['team']
+
+            if team_a == self_team:
+                return JsonResponse({'errors': ['Cannot activate self.']}, status=400)
+            else:
+                team_a.is_active = True
+                team_a.save()
+                return JsonResponse({'redirect': reverse_lazy('admin-teams')})
+        else:
+            return JsonResponse({'errors':['Team not found.']}, status=404)

@@ -27,6 +27,7 @@ class Scores (CTFStartMixin, View):
             .values('num_solves')
         )
 
+        # TODO: ensure this is only counting activated teams
         score_entries = (CTFTeam.objects
             .annotate (sum_points=Sum(
                 Case(
@@ -63,6 +64,7 @@ class ScoresFeed (CTFStartMixin, View):
             .values('num_solves')
         )
 
+        # TODO: ensure this is only counting activated teams
         score_entries = (CTFTeam.objects
             .annotate (sum_points=Sum(
                 Case(
