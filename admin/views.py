@@ -13,9 +13,6 @@ from django.http import JsonResponse
 
 
 # Create your views here.
-class AdminHome (LoginRequiredMixin, AdminRequiredMixin, View):
-    def get (self, request):
-        return render (request, 'admin/home.html')
 
 class AdminChals (LoginRequiredMixin, AdminRequiredMixin, View):
     def get (self, request):
