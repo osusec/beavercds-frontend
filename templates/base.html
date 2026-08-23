@@ -50,6 +50,18 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'profile-home' %}">Profile</a>
                 </li>
+                {% if user.is_admin %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Admin
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'admin-teams' %}">Teams</a></li>
+                        <li><a class="dropdown-item" href="{% url 'admin-chals' %}">Challenges</a></li>
+                        <li><a class="dropdown-item" href="{% url 'admin-solves' %}">Challenge Solves</a></li>
+                    </ul>
+                </li>
+                {% endif %}
                 <li class="nav-item">
                     <a id="bcds-logout-btn" class="nav-link" href="#">Logout</a>
                 </li>
