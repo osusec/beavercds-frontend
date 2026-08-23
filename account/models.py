@@ -24,7 +24,8 @@ class CTFTeam (AbstractBaseUser, PermissionsMixin):
     ctftime_bool = models.BooleanField()
     bracket = models.ForeignKey(CTFTeam_Bracket, on_delete=models.PROTECT, null=True)
     username = None
-    is_admin = models.BooleanField(default=False) # TODO
+    is_admin = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
 
     USERNAME_FIELD = 'team_name'
     REQUIRED_FIELDS = []

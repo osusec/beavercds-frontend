@@ -167,4 +167,4 @@ class ChangeBracket (LoginRequiredMixin, View):
             else:
                 return JsonResponse({'errors': ['Incorrect password to join bracket.']}, status=401)
         else:
-            return JsonResponse({'errors':['Choose a valid bracket.']}, status=404)
+            return JsonResponse({'errors':['Bracket not found.']}, status=404)

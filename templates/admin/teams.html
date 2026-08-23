@@ -50,6 +50,7 @@
                     <th scope="col">Contact Emails</th>
                     <th scope="col"><!-- Edit bracket button --></th>
                     <th scope="col">Bracket</th>
+                    <th scope="col">Active</th>
                 </tr>
             </thead>
             <tbody>
@@ -80,9 +81,24 @@
                         <td>
                             {% if team.bracket %}{{ team.bracket.bracket_name }}{% else %}Open{% endif %}
                         </td>
+                        <td>
+                            {% if team.is_active %}
+                            <form class="bcds-form" method="post" action="{% url 'deactivate-team' %}" id="deactivate_{{ team.pk }}">
+                                <input type="hidden" name="team" value="{{ team.pk }}">
+                                {% csrf_token %}
+                            </form>
+                            <button class="btn btn-outline-danger" type="submit" form="deactivate_{{ team.pk }}" {% if team == request.user %}disabled{% endif %}>Deactivate</button>
+                            {% else %}
+                            <form class="bcds-form" method="post" action="{% url 'activate-team' %}" id="activate_{{ team.pk }}">
+                                <input type="hidden" name="team" value="{{ team.pk }}">
+                                {% csrf_token %}
+                            </form>
+                            <button class="btn btn-outline-success" type="submit" form="activate_{{ team.pk }}" {% if team == request.user %}disabled{% endif %}>Activate</button>
+                            {% endif %}
+                        </td>
                     </tr>
                     <tr class="collapse" id="teamBracketCollapse-{{ team.pk }}">
-                        <td colspan="6">
+                        <td colspan="7">
                             <form class="bcds-form input-group d-flex flex-row my-2" method="post" action="{% url 'change_bracket_adm' %}">
                                 <select class="form-select form-control mx-1" name="bracket" id="selectBracketGroup">
                                         <option {% if not team.bracket %}selected{% endif %} value="">Open</option>
