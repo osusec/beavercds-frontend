@@ -95,27 +95,6 @@ class ScoresFeed (CTFStartMixin, View):
 
         return JsonResponse({"standings": list(score_entries)})
 
-# TODO: remove
-class FirstBlood (CTFStartMixin, View):
+class Rules (View):
     def get (self, request):
-        min_per_chal = Subquery(
-            ChallengeSolve.objects
-            .filter(challenge=OuterRef('challenge'))
-            .order_by('time_of_solve')
-            .values('time_of_solve')[:1]
-        )
-
-        firstbloods = (
-            ChallengeSolve.objects
-            .annotate(min_ts=min_per_chal)
-            .filter(time_of_solve=F('min_ts'))
-            .order_by('-time_of_solve')
-        )
-
-        firstbloods = firstbloods.values(
-            challenge_name=F("challenge__name"),
-            team_name=F("team__team_name"),
-            solvetime=F("time_of_solve")
-        )
-
-        return render(request, "firstbloods.html", {'firstbloods': firstbloods})
+        return render(request, "rules.html", {})

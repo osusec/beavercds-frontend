@@ -15,6 +15,7 @@ class ListChal (LoginRequiredMixin, CTFStartMixin, View):
         category = request.GET.get('category')
 
         # TODO: most disgusting code ever written
+        # TODO: ensure this is only counting activated teams
         chals = (Challenge.objects
             .filter(active=True)
             .annotate (solved=Exists(

@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Rules | {{ event_name }}{% endblock %}
+
+{% block content %}
+
+    <h2 class="mb-4 my-3">Rules</h2>
+    <div class="container">
+        {% load markdownify %}
+        {{ rules_md|markdownify }}
+    </div>
+
+{% endblock %}
