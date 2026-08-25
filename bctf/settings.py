@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 from django.urls import reverse_lazy
 from django.utils.timezone import datetime
+from django.utils.csp import CSP
 from authlib.integrations.django_client import OAuth
 import environ
 
@@ -54,6 +55,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.csp.ContentSecurityPolicyMiddleware',
     'bctf.middleware.TimezoneMiddleware',
 ]
 
@@ -86,6 +88,17 @@ OAUTH.register(
     token_endpoint_auth_method='client_secret_post'
 )
 
+SECURE_CSP = {
+    "default-src": [CSP.NONE],
+    "script-src": [CSP.SELF, "https://cdnjs.cloudflare.com", "https://cdn.jsdelivr.net"],
+    "style-src": [CSP.NONCE, "https://cdn.jsdelivr.net", "https://fonts.googleapis.com"],
+    "img-src": [CSP.SELF, "https:"],
+    "font-src": [CSP.SELF, "https://fonts.gstatic.com", "https://cdn.jsdelivr.net"],
+    "base-uri": [CSP.SELF],
+    "form-action": [CSP.SELF],
+    "frame-ancestors": [CSP.NONE],
+}
+
 ROOT_URLCONF = 'bctf.urls'
 
 TEMPLATES = [
@@ -99,6 +112,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.csp',
                 'bctf.context_processors.ctf_event'
             ],
         },
