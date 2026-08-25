@@ -107,7 +107,7 @@ TEMPLATES = [
 
 MARKDOWNIFY = {
     "default": {
-        "WHITELIST_TAGS": ['p', 'a', 'code'],
+        "WHITELIST_TAGS": ['p', 'a', 'code', 'b', 'em', 'strong', 'i', 'li', 'ol', 'ul', 'h3', 'h4', 'h5'],
         "WHITELIST_ATTRS": [
             'href',
             'src',
@@ -190,13 +190,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CTF_EVENT_NAME = ''
 CTF_EVENT_START = datetime.fromisoformat('1970-01-01 00:00:00.000+00:00')
-CTF_EVENT_END = datetime.fromisoformat('1970-01-01 00:00:00.000+00:00')
+CTF_EVENT_END = datetime.fromisoformat('2027-01-01 00:00:00.000+00:00')
 CTF_CTFTIME_LINK = ''
 CTF_GITLAB_LINK = ''
 CTF_DISCORD_LINK = ''
 CTF_EMAIL_LINK = ''
 CTF_BSKY_LINK = ''
+CTF_SPONSORS = []
+CTF_RULES = """"""
 THRESHOLD_SOLVES = 20
-SPONSORS = []
 
 from .helm_settings import *

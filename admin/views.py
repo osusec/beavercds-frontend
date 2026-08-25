@@ -18,6 +18,7 @@ class AdminChals (LoginRequiredMixin, AdminRequiredMixin, View):
     def get (self, request):
         team = request.user
 
+        # TODO: ensure this is only counting activated teams
         chals = (Challenge.objects
             .filter(active=True)
             .annotate (solved=Exists(

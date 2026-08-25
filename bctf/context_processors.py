@@ -10,6 +10,7 @@ def ctf_event (request):
         "discord_link": settings.CTF_DISCORD_LINK,
         "email_link": settings.CTF_EMAIL_LINK,
         "bluesky_link": settings.CTF_BSKY_LINK,
-        'sponsors': settings.SPONSORS
+        'sponsors': settings.CTF_SPONSORS,
+        "rules_md": settings.CTF_RULES,
     }
     
