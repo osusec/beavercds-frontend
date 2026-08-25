@@ -17,15 +17,19 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=B612:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
 
-        <style>
+        <style nonce="{{ csp_nonce }}">
             .form-control:focus {
                 border-color: #6c757d;
                 box-shadow: 0 0 0 .25rem rgba(110,110,110,0.25);
             }
+
+            body {
+                font-family: 'B612', sans-serif;
+            }
         </style>
     </head>
 
-    <body class="d-flex flex-column min-vh-100" style="font-family: 'B612', sans-serif;">
+    <body class="d-flex flex-column min-vh-100">
         <nav class="navbar navbar-expand-lg sticky-top bg-body">
             <div class="container">
             <a class="navbar-brand" href="/"><h2>{{ event_name }}</h2></a>
