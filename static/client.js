@@ -31,17 +31,20 @@ document.querySelectorAll(".bcds-copy-btn").forEach(element =>
 });
 
 // Bracket selector and password fields
-document.getElementById("selectBracketGroup").addEventListener("change", (event) =>
+document.querySelectorAll("#selectBracketGroup").forEach(element =>
 {
-    const bracketSelect = event.target.querySelector(".bracket-select:checked")
-    const bracket_pw_id = bracketSelect.dataset.passwordId;
-    var bracket_pw = document.getElementById(bracket_pw_id);
-        
-    document.querySelectorAll(".bracket_password").forEach(element =>
+    element.addEventListener("change", (event) =>
     {
-        element.hidden = true;
+        const bracketSelect = event.target.querySelector(".bracket-select:checked")
+        const bracket_pw_id = bracketSelect.dataset.passwordId;
+        var bracket_pw = document.getElementById(bracket_pw_id);
+
+        document.querySelectorAll(".bracket_password").forEach(element =>
+        {
+            element.hidden = true;
+        });
+        bracket_pw.hidden = false;
     });
-    bracket_pw.hidden = false;
 });
 
 // Perform AJAX style error handling on forms
