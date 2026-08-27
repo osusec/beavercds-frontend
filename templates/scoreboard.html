@@ -4,8 +4,14 @@
 
 {% block content %}
 
-<!-- TODO: have challenges-like filter for bracket -->
     <h2 class="mb-4 my-3">Scoreboard</h2>
+        <div class="d-flex flex-row justify-content-evenly w-100 mb-4 my-3">
+        <a href="{% url 'scoreboard' %}" class="link-secondary link-underline-opacity-0">all</a>
+        <a href="{% url 'scoreboard' %}{% querystring bracket='' %}" class="link-secondary link-underline-opacity-0">Open</a>
+        {% for b in brackets %}
+            <a href="{% url 'scoreboard' %}{% querystring bracket=b.bracket_name %}" class="link-secondary link-underline-opacity-0">{{ b.bracket_name }}</a>
+        {% endfor %}
+    </div>
     <div class="container">
         <table class="table table-striped w-100">
             <thead>

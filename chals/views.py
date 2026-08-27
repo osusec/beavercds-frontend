@@ -36,7 +36,6 @@ class ListChal (LoginRequiredMixin, CTFStartMixin, View):
         if category:
             chals = chals.filter(category=category)
 
-        # TODO: clean
         chals_with_files = [(chal, ChallengeFile.objects.filter(challenge=chal)) for chal in chals.order_by('solved')]
 
         categories = Challenge.objects.distinct('category')

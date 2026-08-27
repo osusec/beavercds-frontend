@@ -19,6 +19,9 @@ class FrontPage (View):
 
 class Scores (CTFStartMixin, View):
     def get (self, request):
+        # bracket name, which is unique
+        bracket = request.GET.get('bracket')
+        print(bracket)
 
         solve_count_subq = (ChallengeSolve.objects
             .filter(challenge=OuterRef('challengesolve__challenge__pk'), team__is_active=True)
@@ -43,7 +46,14 @@ class Scores (CTFStartMixin, View):
             .order_by('-sum_points')
         )
 
-        return render (request, "scoreboard.html", {'scores': score_entries})
+        if bracket:
+            score_entries = score_entries.filter(bracket__bracket_name=bracket)
+        elif bracket == "":
+            score_entries = score_entries.filter(bracket=None)
+
+        brackets = CTFTeam_Bracket.objects.distinct('bracket_name')
+
+        return render (request, "scoreboard.html", {'scores': score_entries, 'brackets': brackets})
 
 
 # For CTFTime
