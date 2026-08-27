@@ -51,7 +51,11 @@
     </div>
     <div class="container mt-4">
         <h3 class="mb-4">All Solves</h3>
-        <!-- TODO: this desperately needs a search bar -->
+         <form class="input-group d-flex flex-row mb-2" id="search_solves" method="get" action="{% url 'admin-solves' %}">
+            <input type="text" id="solves_searchbar" name="search" class="form-control border-secondary mx-1" placeholder="Search team, bracket, challenge, or category" value="{% if solve_search %}{{ solve_search }}{% endif %}">
+            <a class="btn btn-outline-danger mx-1" href="{% url 'admin-solves' %}">Clear</a>
+            <button class="btn btn-outline-secondary mx-1" type="submit">Search</button>
+        </form>
         <table class="table table-striped w-100">
             <thead>
                 <tr>

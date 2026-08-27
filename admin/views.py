@@ -38,6 +38,8 @@ class AdminChals (LoginRequiredMixin, AdminRequiredMixin, View):
 
 class AdminSolves (LoginRequiredMixin, AdminRequiredMixin, View):
     def get (self, request):
+        solve_search = request.GET.get('search')
+
         min_per_chal = Subquery(
             ChallengeSolve.objects
             .filter(challenge=OuterRef('challenge'), team__is_active=True)
@@ -75,7 +77,16 @@ class AdminSolves (LoginRequiredMixin, AdminRequiredMixin, View):
             .order_by('-time_of_solve')
         )
 
-        return render (request, 'admin/solves.html', {'firstbloods': firstbloods[:5], 'number_solves': number_solves, 'all_solves': all_solves})
+        # TODO: bug, won't match against the Open bracket
+        if solve_search:
+            all_solves = (all_solves.filter(
+                Q(team__team_name__icontains=solve_search) |
+                Q(team__bracket__bracket_name__icontains=solve_search) |
+                Q(challenge__name__icontains=solve_search) |
+                Q(challenge__category__icontains=solve_search)
+            ))
+
+        return render (request, 'admin/solves.html', {'firstbloods': firstbloods[:5], 'number_solves': number_solves, 'all_solves': all_solves, 'solve_search': solve_search})
         
 class AdminTeams (LoginRequiredMixin, AdminRequiredMixin, View):
     def get (self, request):
