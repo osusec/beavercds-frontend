@@ -11,6 +11,7 @@
         <table class="table table-striped w-100">
             <thead>
                 <tr>
+                    <th scope="col"></th>
                     <th scope="col">Challenge</th>
                     <th scope="col">Time</th>
                     <th scope="col">Team</th>
@@ -19,7 +20,8 @@
             <tbody>
                 {% for blood in firstbloods %}
                     <tr>
-                        <td>{{ blood.challenge_name }} </td>
+                        <td></td>
+                        <td>{{ blood.challenge_name }}</td>
                         <td>{{ blood.solvetime }}</td>
                         <td>{{ blood.team_name }}</td>
                     </tr>
@@ -59,6 +61,7 @@
         <table class="table table-striped w-100">
             <thead>
                 <tr>
+                    <th scope="col"></th>
                     <th scope="col">Team</th>
                     <th scope="col">Time</th>
                     <th scope="col">Challenge</th>
@@ -67,6 +70,7 @@
             <tbody>
                 {% for solve in all_solves %}
                     <tr>
+                        <td></td>
                         <td {% if not solve.team.is_active %}class="text-secondary"{% endif %}>{{ solve.team.team_name }} {% if not solve.team.is_active %}(inactive){% endif %}</td>
                         <td {% if not solve.team.is_active %}class="text-secondary"{% endif %}>{{ solve.time_of_solve|date:"D" }} {{ solve.time_of_solve|time:"g:i A e" }}</td>
                         <td {% if not solve.team.is_active %}class="text-secondary"{% endif %}>{{ solve.challenge.name }}</td>

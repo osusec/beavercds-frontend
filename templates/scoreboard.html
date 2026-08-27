@@ -16,6 +16,7 @@
         <table class="table table-striped w-100">
             <thead>
                 <tr>
+                    <th scope="col"></th>
                     <th scope="col">#</th>
                     <th scope="col">Team</th>
                     <th scope="col">Points</th>
@@ -24,6 +25,7 @@
             <tbody>
                 {% for entry in scores %}
                     <tr>
+                        <td></td>
                         <td>{{ entry.place }} </td>
                         <td><span>{{ entry.team_name }}</span>
                             {% if entry.ctftime_bool %} 
