@@ -21,7 +21,6 @@ class Scores (CTFStartMixin, View):
     def get (self, request):
         # bracket name, which is unique
         bracket = request.GET.get('bracket')
-        print(bracket)
 
         solve_count_subq = (ChallengeSolve.objects
             .filter(challenge=OuterRef('challengesolve__challenge__pk'), team__is_active=True)
