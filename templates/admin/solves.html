@@ -7,6 +7,7 @@
     <h2 class="mb-4 my-3">Solves | Admin Panel</h2>
     <div class="container mb-4">
         <h3 class="mb-4">First Bloods</h3>
+        <p>These numbers do not count inactive teams.</p>
         <table class="table table-striped w-100">
             <thead>
                 <tr>
@@ -28,6 +29,7 @@
     </div>
     <div class="container my-4">
         <h3 class="mb-4">Number of Solves</h3>
+        <p>These numbers do not count inactive teams.</p>
         <table class="table table-striped w-100">
             <thead>
                 <tr>
@@ -49,6 +51,7 @@
     </div>
     <div class="container mt-4">
         <h3 class="mb-4">All Solves</h3>
+        <!-- TODO: this desperately needs a search bar -->
         <table class="table table-striped w-100">
             <thead>
                 <tr>
@@ -60,9 +63,9 @@
             <tbody>
                 {% for solve in all_solves %}
                     <tr>
-                        <td>{{ solve.team_name }} </td>
-                        <td>{{ solve.solvetime|date:"D" }} {{ solve.solvetime|time:"g:i A e" }}</td>
-                        <td>{{ solve.challenge_name }}</td>
+                        <td {% if not solve.team.is_active %}class="text-secondary"{% endif %}>{{ solve.team.team_name }} {% if not solve.team.is_active %}(inactive){% endif %}</td>
+                        <td {% if not solve.team.is_active %}class="text-secondary"{% endif %}>{{ solve.time_of_solve|date:"D" }} {{ solve.time_of_solve|time:"g:i A e" }}</td>
+                        <td {% if not solve.team.is_active %}class="text-secondary"{% endif %}>{{ solve.challenge.name }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
