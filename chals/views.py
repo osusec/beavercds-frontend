@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import *
-from django.db.models import Exists, OuterRef, F, Max, Case, When, Count
+from django.db.models import Exists, OuterRef, F, Q, Max, Case, When, Count
+from django.db.models.functions import Rank, Greatest
 from .forms import SubmitFlagForm
 from django.urls import reverse_lazy
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
@@ -14,21 +15,21 @@ class ListChal (LoginRequiredMixin, CTFStartMixin, View):
         team = request.user
         category = request.GET.get('category')
 
-        # TODO: most disgusting code ever written
-        # TODO: ensure this is only counting activated teams
         chals = (Challenge.objects
             .filter(active=True)
+            .annotate (num_solves=Count(
+                'challengesolve',
+                filter=Q(challengesolve__team__is_active=True)
+            ))
+            .annotate(
+                current_points_value=Greatest(
+                    F('min_points'),
+                    ((F('min_points')-F('max_points'))*(F('num_solves')**2)/(THRESHOLD_SOLVES**2))+F('max_points')
+                )
+            )
             .annotate (solved=Exists(
                 ChallengeSolve.objects
                 .filter(challenge=OuterRef('pk'), team=team)
-            ))
-            .annotate (num_solves=Count('challengesolve'))
-            .annotate (current_points_value=(
-                ((F('min_points')-F('max_points'))*(F('num_solves')**2)/(THRESHOLD_SOLVES**2))+F('max_points')
-            ))
-            .annotate (current_points_value=Case(
-                When(current_points_value__lte=F('min_points'), then=F('min_points')),
-                default=F('current_points_value')
             ))
         )
 

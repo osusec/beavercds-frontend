@@ -2,8 +2,8 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
-from django.db.models import Exists, OuterRef, Count, Sum, Window, F, Case, When, Subquery, Min
-from django.db.models.functions import Rank
+from django.db.models import Exists, OuterRef, Count, Sum, Window, F, Q, Case, When, Subquery, Min
+from django.db.models.functions import Rank, Greatest
 from bctf.settings import THRESHOLD_SOLVES
 from .mixins import AdminRequiredMixin
 from chals.models import *
@@ -18,24 +18,21 @@ class AdminChals (LoginRequiredMixin, AdminRequiredMixin, View):
     def get (self, request):
         team = request.user
 
-        # TODO: ensure this is only counting activated teams
         chals = (Challenge.objects
             .filter(active=True)
-            .annotate (solved=Exists(
-                ChallengeSolve.objects
-                .filter(challenge=OuterRef('pk'), team=team)
+            .annotate (num_solves=Count(
+                'challengesolve',
+                filter=Q(challengesolve__team__is_active=True)
             ))
-            .annotate (num_solves=Count('challengesolve'))
-            .annotate (current_points_value=(
-                ((F('min_points')-F('max_points'))*(F('num_solves')**2)/(THRESHOLD_SOLVES**2))+F('max_points')
-            ))
-            .annotate (current_points_value=Case(
-                When(current_points_value__lte=F('min_points'), then=F('min_points')),
-                default=F('current_points_value')
-            ))
+            .annotate(
+                current_points_value=Greatest(
+                    F('min_points'),
+                    ((F('min_points')-F('max_points'))*(F('num_solves')**2)/(THRESHOLD_SOLVES**2))+F('max_points')
+                )
+            )
         )
 
-        chals_with_files = [(chal, ChallengeFile.objects.filter(challenge=chal)) for chal in chals.order_by('solved')]
+        chals_with_files = [(chal, ChallengeFile.objects.filter(challenge=chal)) for chal in chals.order_by('num_solves')]
 
         return render (request, 'admin/chals.html', {'chals': chals_with_files})
 
@@ -43,15 +40,15 @@ class AdminSolves (LoginRequiredMixin, AdminRequiredMixin, View):
     def get (self, request):
         min_per_chal = Subquery(
             ChallengeSolve.objects
-            .filter(challenge=OuterRef('challenge'))
-            .order_by('time_of_solve')
-            .values('time_of_solve')[:1]
+            .filter(challenge=OuterRef('challenge'), team__is_active=True)
+            .order_by('time_of_solve', 'pk')
+            .values('pk')[:1]
         )
 
         firstbloods = (
             ChallengeSolve.objects
             .annotate(min_ts=min_per_chal)
-            .filter(time_of_solve=F('min_ts'))
+            .filter(pk=F('min_ts'))
             .order_by('-time_of_solve')
             .values (
                 challenge_name=F("challenge__name"),
@@ -62,7 +59,10 @@ class AdminSolves (LoginRequiredMixin, AdminRequiredMixin, View):
 
         number_solves = (
             Challenge.objects
-            .annotate(solves=Count('challengesolve'))
+            .annotate(solves=Count(
+                'challengesolve',
+                filter=Q(challengesolve__team__is_active=True)
+            ))
             .values(
                 challenge_name=F('name'),
                 solves=F('solves')
@@ -73,38 +73,26 @@ class AdminSolves (LoginRequiredMixin, AdminRequiredMixin, View):
         all_solves = (
             ChallengeSolve.objects
             .order_by('-time_of_solve')
-            .values(
-                team_name=F('team__team_name'),
-                solvetime=F('time_of_solve'),
-                challenge_name=F('challenge__name')
-            )
         )
 
         return render (request, 'admin/solves.html', {'firstbloods': firstbloods[:5], 'number_solves': number_solves, 'all_solves': all_solves})
         
 class AdminTeams (LoginRequiredMixin, AdminRequiredMixin, View):
     def get (self, request):
-        # TODO: most disgusting code ever written
+
         solve_count_subq = (ChallengeSolve.objects
-            .filter(challenge=OuterRef('challengesolve__challenge__pk'))
+            .filter(challenge=OuterRef('challengesolve__challenge__pk'), team__is_active=True)
             .values('challenge')
             .annotate(num_solves=Count('challenge'))
             .values('num_solves')
         )
 
-        # TODO: ensure this is only counting activated teams
         score_entries = (CTFTeam.objects
+            .filter (is_active=True)
             .annotate (sum_points=Sum(
-                Case(
-                    When(
-                        challengesolve__challenge__min_points__lte=(
-                            ((F('challengesolve__challenge__min_points')-F('challengesolve__challenge__max_points'))*(Subquery(solve_count_subq)**2)/(THRESHOLD_SOLVES**2))+F('challengesolve__challenge__max_points')
-                        ),
-                        then=(
-                            ((F('challengesolve__challenge__min_points')-F('challengesolve__challenge__max_points'))*(Subquery(solve_count_subq)**2)/(THRESHOLD_SOLVES**2))+F('challengesolve__challenge__max_points')
-                        )
-                    ),
-                    default=F('challengesolve__challenge__min_points')
+                Greatest(
+                    F('challengesolve__challenge__min_points'),
+                    ((F('challengesolve__challenge__min_points')-F('challengesolve__challenge__max_points'))*(Subquery(solve_count_subq)**2)/(THRESHOLD_SOLVES**2))+F('challengesolve__challenge__max_points')
                 ),
                 default=0
             ))
@@ -115,7 +103,7 @@ class AdminTeams (LoginRequiredMixin, AdminRequiredMixin, View):
             .order_by('-sum_points')
         )
 
-        teams_with_emails = [(team, CTFTeam_ContactEmails.objects.filter(team=team)) for team in score_entries]
+        teams_with_emails = [(team, CTFTeam_ContactEmails.objects.filter(team=team)) for team in CTFTeam.objects.all().order_by('pk')]
 
         num_teams = CTFTeam.objects.all().count()
 

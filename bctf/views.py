@@ -2,7 +2,7 @@ from django.shortcuts import render
 from chals.models import *
 from account.models import *
 from django.db.models import Exists, OuterRef, Count, Sum, Window, F, Case, When, Subquery, Min
-from django.db.models.functions import Rank
+from django.db.models.functions import Rank, Greatest
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
 from django.db import transaction
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
@@ -19,27 +19,20 @@ class FrontPage (View):
 
 class Scores (CTFStartMixin, View):
     def get (self, request):
-        # TODO: most disgusting code ever written
+
         solve_count_subq = (ChallengeSolve.objects
-            .filter(challenge=OuterRef('challengesolve__challenge__pk'))
+            .filter(challenge=OuterRef('challengesolve__challenge__pk'), team__is_active=True)
             .values('challenge')
             .annotate(num_solves=Count('challenge'))
             .values('num_solves')
         )
 
-        # TODO: ensure this is only counting activated teams
         score_entries = (CTFTeam.objects
+            .filter (is_active=True)
             .annotate (sum_points=Sum(
-                Case(
-                    When(
-                        challengesolve__challenge__min_points__lte=(
-                            ((F('challengesolve__challenge__min_points')-F('challengesolve__challenge__max_points'))*(Subquery(solve_count_subq)**2)/(THRESHOLD_SOLVES**2))+F('challengesolve__challenge__max_points')
-                        ),
-                        then=(
-                            ((F('challengesolve__challenge__min_points')-F('challengesolve__challenge__max_points'))*(Subquery(solve_count_subq)**2)/(THRESHOLD_SOLVES**2))+F('challengesolve__challenge__max_points')
-                        )
-                    ),
-                    default=F('challengesolve__challenge__min_points')
+                Greatest(
+                    F('challengesolve__challenge__min_points'),
+                    ((F('challengesolve__challenge__min_points')-F('challengesolve__challenge__max_points'))*(Subquery(solve_count_subq)**2)/(THRESHOLD_SOLVES**2))+F('challengesolve__challenge__max_points')
                 ),
                 default=0
             ))
@@ -56,27 +49,20 @@ class Scores (CTFStartMixin, View):
 # For CTFTime
 class ScoresFeed (CTFStartMixin, View):
     def get (self, request):
-        # TODO: most disgusting code ever written
+
         solve_count_subq = (ChallengeSolve.objects
-            .filter(challenge=OuterRef('challengesolve__challenge__pk'))
+            .filter(challenge=OuterRef('challengesolve__challenge__pk'), team__is_active=True)
             .values('challenge')
             .annotate(num_solves=Count('challenge'))
             .values('num_solves')
         )
 
-        # TODO: ensure this is only counting activated teams
         score_entries = (CTFTeam.objects
+            .filter (is_active=True)
             .annotate (sum_points=Sum(
-                Case(
-                    When(
-                        challengesolve__challenge__min_points__lte=(
-                            ((F('challengesolve__challenge__min_points')-F('challengesolve__challenge__max_points'))*(Subquery(solve_count_subq)**2)/(THRESHOLD_SOLVES**2))+F('challengesolve__challenge__max_points')
-                        ),
-                        then=(
-                            ((F('challengesolve__challenge__min_points')-F('challengesolve__challenge__max_points'))*(Subquery(solve_count_subq)**2)/(THRESHOLD_SOLVES**2))+F('challengesolve__challenge__max_points')
-                        )
-                    ),
-                    default=F('challengesolve__challenge__min_points')
+                Greatest(
+                    F('challengesolve__challenge__min_points'),
+                    ((F('challengesolve__challenge__min_points')-F('challengesolve__challenge__max_points'))*(Subquery(solve_count_subq)**2)/(THRESHOLD_SOLVES**2))+F('challengesolve__challenge__max_points')
                 ),
                 default=0
             ))

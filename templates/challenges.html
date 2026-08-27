@@ -16,7 +16,7 @@
             <div class="d-flex flex-column align-items-center mb-4 p-4 border {% if challenge.solved %}border-success{% else %}border-secondary{% endif %}">
                 <div class="w-100 d-flex flex-row align-items-center justify-content-end">
                     <h3 class="flex-grow-1 mb-4">{{ challenge.name }}</h3>
-                    <h3>{{ challenge.current_points_value }}</h3>
+                    <h3>{{ challenge.current_points_value }} <span class="text-secondary">/ {{ challenge.max_points }}</span></h3>
                 </div>
                 <div class="w-100 d-flex flex-row align-items-center justify-content-end text-secondary">
                     <p class="flex-grow-1">{{ challenge.author }}</p>
