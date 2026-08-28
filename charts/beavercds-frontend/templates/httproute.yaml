@@ -1,6 +1,5 @@
 {{- if .Values.httpRoute.enabled -}}
 {{- $fullName := include "beavercds-frontend.fullname" . -}}
-{{- $svcPort := .Values.service.port -}}
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
@@ -21,18 +20,20 @@ spec:
     {{- toYaml . | nindent 4 }}
   {{- end }}
   rules:
-    {{- range .Values.httpRoute.rules }}
-    {{- with .matches }}
     - matches:
-      {{- toYaml . | nindent 8 }}
-    {{- end }}
-    {{- with .filters }}
-      filters:
-      {{- toYaml . | nindent 8 }}
-    {{- end }}
+        - path:
+            type: PathPrefix
+            value: /
       backendRefs:
         - name: {{ $fullName }}
-          port: {{ $svcPort }}
+          port: 8000
           weight: 1
-    {{- end }}
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api
+      backendRefs:
+        - name: {{ $fullName }}
+          port: 8001
+          weight: 1
 {{- end }}

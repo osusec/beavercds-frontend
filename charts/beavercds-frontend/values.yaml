@@ -59,7 +59,6 @@ serviceAccount:
   create: true
   name: ""
 
-
 service:
   type: ClusterIP
 
@@ -71,10 +70,8 @@ ingress:
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: scoreboard.beavercds.example
-      paths:
-        - path: /
-          pathType: Prefix
+    - scoreboard.beavercds.example
+    # we do not expose custom path conditions
   tls: []
     # - secretName: chart-example-tls
     #   hosts:
@@ -93,10 +90,8 @@ httpRoute:
       # namespace: default
   hostnames:
     - scoreboard.beavercds.example
-  rules:
-    - matches:
-        - path:
-            value: /
+  # we do not expose custom path rules
+  # rules:
 
 resources: {}
 

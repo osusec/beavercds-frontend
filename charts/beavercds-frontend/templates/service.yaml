@@ -7,9 +7,13 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
+    - port: 8000
       name: frontend
-      targetPort: frontend
+      targetPort: 8000
+      protocol: TCP
+    - port: 8001
+      name: frontend-api
+      targetPort: 8001
       protocol: TCP
   selector:
     {{- include "beavercds-frontend.selectorLabels" . | nindent 4 }}

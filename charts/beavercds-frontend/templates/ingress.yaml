@@ -28,16 +28,19 @@ spec:
     - host: {{ .host | quote }}
       http:
         paths:
-          {{- range .paths }}
-          - path: {{ .path }}
-            {{- with .pathType }}
-            pathType: {{ . }}
-            {{- end }}
+          - path: /
+            pathType: Prefix
             backend:
               service:
                 name: {{ include "beavercds-frontend.fullname" $ }}
                 port:
-                  number: {{ $.Values.service.port }}
-          {{- end }}
+                  name: frontend
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "beavercds-frontend.fullname" $ }}
+                port:
+                  name: frontend-api
     {{- end }}
 {{- end }}
