@@ -2,10 +2,11 @@
 # Admin urls.py
 #
 
-from django.urls import path, include
-from .views import *
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth import views as auth_views
+from django.contrib.auth.decorators import login_required
+from django.urls import include, path
+
+from .views import *
 
 urlpatterns = [
     path("chals/", AdminChals.as_view(), name="admin-chals"),

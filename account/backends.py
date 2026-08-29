@@ -1,9 +1,10 @@
-from django.contrib.auth.backends import BaseBackend
-from .models import CTFTime_Team, CTFTeam_ContactEmails, CTFTeam, CTFTeam_LongtermTokens
-from django.http import HttpResponseServerError
 import requests
+from django.contrib.auth.backends import BaseBackend
+from django.http import HttpResponseServerError
 
 from bctf.settings import OAUTH
+
+from .models import CTFTeam, CTFTeam_ContactEmails, CTFTeam_LongtermTokens, CTFTime_Team
 
 
 class CTFTime_OAuth_Backend(BaseBackend):

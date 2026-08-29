@@ -1,6 +1,7 @@
+from django import forms
+
 from account.models import *
 from chals.models import *
-from django import forms
 
 
 class ChangeBracketAdmForm(forms.Form):

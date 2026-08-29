@@ -1,28 +1,29 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import (
+    Case,
+    Count,
+    Exists,
+    F,
+    Min,
+    OuterRef,
+    Q,
+    Subquery,
+    Sum,
+    When,
+    Window,
+)
+from django.db.models.functions import Greatest, Rank
+from django.http import JsonResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
-from django.db.models import (
-    Exists,
-    OuterRef,
-    Count,
-    Sum,
-    Window,
-    F,
-    Q,
-    Case,
-    When,
-    Subquery,
-    Min,
-)
-from django.db.models.functions import Rank, Greatest
-from bctf.settings import THRESHOLD_SOLVES
-from .mixins import AdminRequiredMixin
-from chals.models import *
-from account.models import *
-from .forms import *
-from django.http import JsonResponse
 
+from account.models import *
+from bctf.settings import THRESHOLD_SOLVES
+from chals.models import *
+
+from .forms import *
+from .mixins import AdminRequiredMixin
 
 # Create your views here.
 

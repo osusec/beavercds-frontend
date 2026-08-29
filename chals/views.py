@@ -1,19 +1,21 @@
-from django.shortcuts import render, redirect
-from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import *
-from django.db.models import Exists, OuterRef, F, Q, Max, Case, When, Count
-from django.db.models.functions import Rank, Greatest
-from .forms import SubmitFlagForm
-from django.urls import reverse_lazy
+from django.db.models import Case, Count, Exists, F, Max, OuterRef, Q, When
+from django.db.models.functions import Greatest, Rank
 from django.http import (
     HttpResponse,
     HttpResponseBadRequest,
     HttpResponseNotFound,
     JsonResponse,
 )
+from django.shortcuts import redirect, render
+from django.urls import reverse_lazy
+from django.views import View
+
 from bctf.settings import THRESHOLD_SOLVES
-from .mixins import CTFStartMixin, CTFEndMixin
+
+from .forms import SubmitFlagForm
+from .mixins import CTFEndMixin, CTFStartMixin
+from .models import *
 
 
 class ListChal(LoginRequiredMixin, CTFStartMixin, View):

@@ -1,8 +1,10 @@
-from django.utils import timezone
-from django.shortcuts import render
-from django.http import JsonResponse
 from functools import wraps
-from bctf.settings import CTF_EVENT_START, CTF_EVENT_END
+
+from django.http import JsonResponse
+from django.shortcuts import render
+from django.utils import timezone
+
+from bctf.settings import CTF_EVENT_END, CTF_EVENT_START
 
 
 class CTFStartMixin:
