@@ -1,52 +1,101 @@
 services:
   caddy:
-    image: caddy
-    command: caddy reverse-proxy --from https://damctf.xyz --to http://app:8000 --internal-certs
+    image: lucaslorentz/caddy-docker-proxy:alpine
     ports:
       - 80:80
       - 443:443
+      - 8000:8000
+    volumes:
+      - ${DOCKER_SOCK:-/var/run/docker.sock}:/var/run/docker.sock:z
+      - caddy_data:/data
+    labels:
+      caddy.local_certs:
+      caddy.skip_install_trust:
 
   db:
     image: postgres:18
     environment:
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: rng
+      POSTGRES_PASSWORD: notaverysecurepassword
+      POSTGRES_DB: bctf-db
     volumes:
       - postgres_data:/var/lib/postgresql
     healthcheck:
-      test: pg_isready -U postgres -d rng
+      test: pg_isready -U postgres -d bctf-db
       interval: 5s
       timeout: 3s
       retries: 3
 
-  app:
-    image: ghcr.io/osusec/beavercds-frontend:local
-    build: .
+  bctf:
+    build:
+      context: .
+      target: development
+    labels:
+      caddy: bctf.localhost
+      caddy.reverse_proxy: "{{upstreams 8000}}"
     environment: &django_env
-      # BCTF_DEBUG: false
-      BCTF_SECRET_KEY: changemechangeme
-      BCTF_ALLOWED_HOSTS: localhost,damctf.xyz,leafeon.bagel.internal
+      # Enable Django debug errors and hot-reload
+      BCTF_DEBUG: 'True'
+      BCTF_ALLOWED_HOSTS: localhost,bctf.localhost
 
-      BCTF_API_AUTHTOKEN: changemetoo
-      BCTF_CTFTIME_CLIENTID: x
-      BCTF_CTFTIME_CLIENTSECRET: x
+      # Set the following config in .env, not here
+      # BCTF_SECRET_KEY: changemechangeme
+      # BCTF_API_AUTHTOKEN: changemetoo
+      # BCTF_CTFTIME_CLIENTID: x
+      # BCTF_CTFTIME_CLIENTSECRET: x
 
+      # Keep these set here, matches the db container
       BCTF_DB_HOST: db
       #BCTF_DB_PORT
       BCTF_DB_USERNAME: postgres
-      BCTF_DB_PASSWORD: password
-      BCTF_DB_NAME: rng
-    ports:
-      - 8000:8000
+      BCTF_DB_PASSWORD: notaverysecurepassword
+      BCTF_DB_NAME: bctf-db
+    depends_on:
+      # Wait for migrations to complete first
+      migrations:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
+    develop:
+      watch: &django_watch
+        # Sync source file changes directly into the container so Django's
+        # dev server can reload them without a full image rebuild.
+        - action: sync
+          path: .
+          target: /app
+          ignore:
+            - __pycache__/
+            - "*.pyc"
+            - .git/
+            - .venv/
+        # Rebuild the image when dependencies change.
+        - action: rebuild
+          path: pyproject.toml
+        - action: rebuild
+          path: uv.lock
+
+  bctf-api:
+    build:
+      context: .
+      target: development
+    labels:
+      caddy: bctf.localhost
+      caddy.reverse_proxy: "/api/* {{upstreams 8001}}"
+    environment:
+      <<: *django_env
+      APP: bctf-api
+      PORT: 8001
     depends_on:
       migrations:
         condition: service_completed_successfully
       db:
         condition: service_healthy
+    develop:
+      watch: *django_watch
 
   migrations:
-    image: ghcr.io/osusec/beavercds-frontend:local
-    build: .
+    build:
+      context: .
+      target: development
     environment: *django_env
     command:
       - sh
@@ -60,3 +109,4 @@ services:
 
 volumes:
   postgres_data:
+  caddy_data:

@@ -9,8 +9,8 @@ spec:
     size: 1Gi
   bootstrap:
     initdb:
-      database: rctf
-      owner: rctf
+      database: bctf-db
+      owner: bctf
 
 ---
 apiVersion: v1
@@ -22,7 +22,7 @@ stringData:
   # BCTF_DEBUG: False
 
   BCTF_SECRET_KEY: changemechangeme
-  BCTF_ALLOWED_HOSTS: localhost,leafeon.bagel.internal
+  BCTF_ALLOWED_HOSTS: ctf.example.com
 
   BCTF_API_AUTHTOKEN: changeme
 
@@ -107,11 +107,31 @@ spec:
           envFrom:
             - secretRef:
                 name: beaverctf-secrets
-          env: *db_cred_env
+          env:
+            <<: *db_cred_env
+            APP: bctf
           volumeMounts:
             - name: config
               mountPath: /app/bctf/helm_settings.py
               subPath: helm_settings.py
+
+        - name: frontend-api
+          image: ghcr.io/osusec/beavercds-frontend:main
+          ports:
+            - name: app
+              containerPort: 8001
+          envFrom:
+            - secretRef:
+                name: beaverctf-secrets
+          env:
+            <<: *db_cred_env
+            APP: bctf-api
+            PORT: 8001
+          volumeMounts:
+            - name: config
+              mountPath: /app/bctf/helm_settings.py
+              subPath: helm_settings.py
+
       volumes:
         - name: config
           configMap:
@@ -127,8 +147,11 @@ spec:
     app: beaverctf-frontend
   ports:
     - protocol: TCP
-      port: 80
+      port: 8000
       targetPort: 8000
+    - protocol: TCP
+      port: 8001
+      targetPort: 8001
 
 ---
 apiVersion: networking.k8s.io/v1
@@ -146,8 +169,15 @@ spec:
               service:
                 name: beaverctf-frontend
                 port:
-                  number: 80
+                  number: 8000
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: beaverctf-frontend
+                port:
+                  number: 8001
   tls:
     - hosts:
-        - frontend.damctf.livinginanother.world
+        - ctf.example.com
       secretName: beaverctf-frontend-tls
