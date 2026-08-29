@@ -21,11 +21,13 @@ from django.views.decorators.csrf import csrf_exempt
 
 
 urlpatterns = [
-    path ('', FrontPage.as_view(), name='bctf-home'),
-    path ('scores/', Scores.as_view(), name='scoreboard'),
-    path ('scores.json', ScoresFeed.as_view(), name='scoreboard-feed'), # TODO: change on ctftime
-    path ('rules/', Rules.as_view(), name='rules'),
-    path ('account/', include ('account.urls')),
-    path ('chals/', include ('chals.urls')),
-    path ('admin/', include ('admin.urls')),
+    path("", FrontPage.as_view(), name="bctf-home"),
+    path("scores/", Scores.as_view(), name="scoreboard"),
+    path(
+        "scores.json", ScoresFeed.as_view(), name="scoreboard-feed"
+    ),  # TODO: change on ctftime
+    path("rules/", Rules.as_view(), name="rules"),
+    path("account/", include("account.urls")),
+    path("chals/", include("chals.urls")),
+    path("admin/", include("admin.urls")),
 ]
