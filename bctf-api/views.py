@@ -187,14 +187,14 @@ def _check_unique_ids(new_chal_state):
 def _check_complete_chal_fields(new_chal_state):
     for c in new_chal_state:
         if (
-            (not "id" in c)
-            or (not "name" in c)
-            or (not "author" in c)
-            or (not "category" in c)
-            or (not "description" in c)
-            or (not "min_points" in c)
-            or (not "max_points" in c)
-            or (not "flag" in c)
+            ("id" not in c)
+            or ("name" not in c)
+            or ("author" not in c)
+            or ("category" not in c)
+            or ("description" not in c)
+            or ("min_points" not in c)
+            or ("max_points" not in c)
+            or ("flag" not in c)
         ):
             # Missing required fields, fail
             return False
@@ -214,7 +214,7 @@ def _check_unique_brackets(new_bracket_state):
 
 def _check_complete_bracket_fields(new_bracket_state):
     for b in new_bracket_state:
-        if (not "name" in b) or (not "password" in b):
+        if ("name" not in b) or ("password" not in b):
             # Missing required fields, fail
             return False
     return True
