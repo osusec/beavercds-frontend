@@ -35,14 +35,15 @@ services:
     environment: &django_env
       # Enable Django debug errors and hot-reload
       BCTF_DEBUG: 'True'
-
-      BCTF_SECRET_KEY: changemechangeme
       BCTF_ALLOWED_HOSTS: localhost,bctf.localhost
 
-      BCTF_API_AUTHTOKEN: changemetoo
-      BCTF_CTFTIME_CLIENTID: x
-      BCTF_CTFTIME_CLIENTSECRET: x
+      # Set the following config in .env, not here
+      # BCTF_SECRET_KEY: changemechangeme
+      # BCTF_API_AUTHTOKEN: changemetoo
+      # BCTF_CTFTIME_CLIENTID: x
+      # BCTF_CTFTIME_CLIENTSECRET: x
 
+      # Keep these set here, matches the db container
       BCTF_DB_HOST: db
       #BCTF_DB_PORT
       BCTF_DB_USERNAME: postgres
@@ -90,7 +91,6 @@ services:
         condition: service_healthy
     develop:
       watch: *django_watch
-
 
   migrations:
     build:
