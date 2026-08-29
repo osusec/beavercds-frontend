@@ -10,11 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
-import datetime as dt
 from pathlib import Path
 
 import environ
-from django.urls import reverse_lazy
 
 env = environ.Env()
 

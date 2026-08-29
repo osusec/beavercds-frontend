@@ -1,13 +1,10 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Case, Count, Exists, F, Max, OuterRef, Q, When
-from django.db.models.functions import Greatest, Rank
+from django.db.models import Count, Exists, F, OuterRef, Q
+from django.db.models.functions import Greatest
 from django.http import (
-    HttpResponse,
-    HttpResponseBadRequest,
-    HttpResponseNotFound,
     JsonResponse,
 )
-from django.shortcuts import redirect, render
+from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import View
 

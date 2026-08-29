@@ -1,15 +1,11 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import (
-    Case,
     Count,
-    Exists,
     F,
-    Min,
     OuterRef,
     Q,
     Subquery,
     Sum,
-    When,
     Window,
 )
 from django.db.models.functions import Greatest, Rank

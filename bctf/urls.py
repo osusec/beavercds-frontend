@@ -16,7 +16,6 @@ Including another URLconf
 """
 
 from django.urls import include, path
-from django.views.decorators.csrf import csrf_exempt
 
 from .views import *
 

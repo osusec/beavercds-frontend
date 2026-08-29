@@ -1,28 +1,17 @@
-import json
-
-from django.db import transaction
 from django.db.models import (
-    Case,
     Count,
-    Exists,
     F,
-    Min,
     OuterRef,
     Subquery,
     Sum,
-    When,
     Window,
 )
 from django.db.models.functions import Greatest, Rank
 from django.http import (
-    HttpResponse,
-    HttpResponseBadRequest,
-    HttpResponseNotFound,
     JsonResponse,
 )
 from django.shortcuts import render
 from django.views import View
-from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 
 from account.models import *
 from bctf.settings import THRESHOLD_SOLVES

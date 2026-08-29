@@ -1,28 +1,11 @@
 import json
 
-from django.contrib.auth.hashers import check_password, make_password
+from django.contrib.auth.hashers import make_password
 from django.db import transaction
-from django.db.models import (
-    Case,
-    Count,
-    Exists,
-    F,
-    OuterRef,
-    Subquery,
-    Sum,
-    When,
-    Window,
-)
-from django.db.models.functions import Rank
 from django.http import (
-    HttpResponse,
-    HttpResponseBadRequest,
-    HttpResponseNotFound,
     JsonResponse,
 )
-from django.shortcuts import render
 from django.views import View
-from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 
 from account.models import *
 from chals.models import *

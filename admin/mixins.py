@@ -1,10 +1,6 @@
 from functools import wraps
 
 from django.core.exceptions import PermissionDenied
-from django.http import JsonResponse
-from django.shortcuts import render
-
-from bctf.settings import CTF_EVENT_END, CTF_EVENT_START
 
 
 class AdminRequiredMixin:

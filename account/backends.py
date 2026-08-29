@@ -1,6 +1,5 @@
 import requests
 from django.contrib.auth.backends import BaseBackend
-from django.http import HttpResponseServerError
 
 from bctf.settings import OAUTH
 
