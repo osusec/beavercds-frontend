@@ -15,17 +15,18 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-from django.urls import path, include
-from .views import *
-from django.views.decorators.csrf import csrf_exempt
+from django.urls import include, path
 
+from .views import *
 
 urlpatterns = [
-    path ('', FrontPage.as_view(), name='bctf-home'),
-    path ('scores/', Scores.as_view(), name='scoreboard'),
-    path ('scores.json', ScoresFeed.as_view(), name='scoreboard-feed'), # TODO: change on ctftime
-    path ('rules/', Rules.as_view(), name='rules'),
-    path ('account/', include ('account.urls')),
-    path ('chals/', include ('chals.urls')),
-    path ('admin/', include ('admin.urls')),
+    path("", FrontPage.as_view(), name="bctf-home"),
+    path("scores/", Scores.as_view(), name="scoreboard"),
+    path(
+        "scores.json", ScoresFeed.as_view(), name="scoreboard-feed"
+    ),  # TODO: change on ctftime
+    path("rules/", Rules.as_view(), name="rules"),
+    path("account/", include("account.urls")),
+    path("chals/", include("chals.urls")),
+    path("admin/", include("admin.urls")),
 ]

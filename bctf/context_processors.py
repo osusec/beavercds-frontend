@@ -1,6 +1,7 @@
 from django.conf import settings
 
-def ctf_event (request):
+
+def ctf_event(request):
     return {
         "event_name": settings.CTF_EVENT_NAME,
         "event_start": settings.CTF_EVENT_START,
@@ -10,7 +11,6 @@ def ctf_event (request):
         "discord_link": settings.CTF_DISCORD_LINK,
         "email_link": settings.CTF_EMAIL_LINK,
         "bluesky_link": settings.CTF_BSKY_LINK,
-        'sponsors': settings.CTF_SPONSORS,
+        "sponsors": settings.CTF_SPONSORS,
         "rules_md": settings.CTF_RULES,
     }
-    
