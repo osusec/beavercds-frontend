@@ -37,11 +37,11 @@ services:
       BCTF_DEBUG: 'True'
       BCTF_ALLOWED_HOSTS: localhost,bctf.localhost
 
-      # Set the following config in .env, not here
-      # BCTF_SECRET_KEY: changemechangeme
-      # BCTF_API_AUTHTOKEN: changemetoo
-      # BCTF_CTFTIME_CLIENTID: x
-      # BCTF_CTFTIME_CLIENTSECRET: x
+      # Read secret vars from .env / shell environment
+      BCTF_SECRET_KEY: ${BCTF_SECRET_KEY:?this var must be set in .env}
+      BCTF_API_AUTHTOKEN: ${BCTF_API_AUTHTOKEN:?this var must be set in .env}
+      BCTF_CTFTIME_CLIENTID: ${BCTF_CTFTIME_CLIENTID:?this var must be set in .env}
+      BCTF_CTFTIME_CLIENTSECRET: ${BCTF_CTFTIME_CLIENTSECRET:?this var must be set in .env}
 
       # Keep these set here, matches the db container
       BCTF_DB_HOST: db
