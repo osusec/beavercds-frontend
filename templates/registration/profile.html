@@ -88,6 +88,7 @@
         </form>
     </div>
 
+    {% if not user.ctftime_bool %}
     <div class="container d-flex flex-column my-4 p-2">
         <h3 class="mb-4">Change Password</h3>
         <p>This will log out all other sessions.</p>
@@ -106,6 +107,7 @@
             <button class="btn btn-outline-secondary my-1" type="submit">Change password</button>
         </form>
     </div>
+    {% endif %}
 
     <div class="container d-flex flex-column mt-4 p-2">
         <a href="{% url 'chals-list' %}" class=" text-decoration-none text-reset"><h3 class="mb-4">Solve History</h3></a>
