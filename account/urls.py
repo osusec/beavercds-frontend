@@ -18,6 +18,7 @@ urlpatterns = [
     path ('email/create/', AddContactEmail.as_view(), name='create_email'),
     path ('email/delete/', DeleteContactEmail.as_view(), name='delete_email'),
     path ('bracket/change/', ChangeBracket.as_view(), name='change_bracket'),
+    path ('change-password/', ChangePassword.as_view(), name='change_password'),
     # path ('', include ('django.contrib.auth.urls')),
     path ('login/', auth_views.LoginView.as_view(), name='login'),
     path ('logout/', auth_views.LogoutView.as_view(), name='logout'),
