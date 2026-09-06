@@ -4,7 +4,7 @@ from django.views import generic, View
 from .models import *
 from chals.models import ChallengeSolve, Challenge
 from .forms import *
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, update_session_auth_hash
 import secrets
 from django.db import IntegrityError
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -168,3 +168,25 @@ class ChangeBracket (LoginRequiredMixin, View):
                 return JsonResponse({'errors': ['Incorrect password to join bracket.']}, status=401)
         else:
             return JsonResponse({'errors':['Bracket not found.']}, status=404)
+
+class ChangePassword (LoginRequiredMixin, View):
+    def post (self, request):
+        team = request.user
+
+        # Do not allow OAuth users to change pw
+        if team.ctftime_bool:
+            return JsonResponse({'errors': 'CTFTime teams not allowed to change password.'}, status=403)
+
+        # Checks the old password, that the new
+        #  passwords match, and runs validators
+        form = PasswordChangeForm(team, request.POST)
+        if form.is_valid():
+            form.save()
+            update_session_auth_hash(request, team)
+            return JsonResponse({'redirect': reverse_lazy('profile-home')})
+        else:
+            errors = []
+            for field,err in form.errors.items():
+                for inst in err:
+                    errors.append(inst)
+            return JsonResponse({'errors':errors}, status=400)
