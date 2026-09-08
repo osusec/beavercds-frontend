@@ -1,5 +1,11 @@
 console.log("hewwo :3");
 
+/* Helper functions for the scoreboard */
+
+
+/* end Helper functions for the scoreboard */
+
+
 // Timezone settings
 const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 document.cookie = `timezone=${encodeURIComponent(timezone)}`;
@@ -82,7 +88,7 @@ document.querySelectorAll(".bcds-form").forEach(element =>
 });
 
 /* under TODO */
-function calculate_points (min_points, max_points, num_solves, threshold)
+function _calculate_points (min_points, max_points, num_solves, threshold)
 {
     // max + (min-max)*solves^2/threshold^2
     let temp = (num_solves**2)/(threshold**2);
@@ -92,7 +98,7 @@ function calculate_points (min_points, max_points, num_solves, threshold)
     return Math.max(temp, min_points);
 }
 
-function calculate_team_points (chals_solved, chals_lookup, time_of_solve)
+function _calculate_team_points (chals_solved, chals_lookup, time_of_solve)
 {
     let total = 0;
     chals_solved.forEach((chal) =>
@@ -102,21 +108,19 @@ function calculate_team_points (chals_solved, chals_lookup, time_of_solve)
     return total;
 }
 
-async function get_data ()
+async function scores_over_time ()
 {
+    // Fetch data. If there's an error hitting the server,
+    //  then return an empty array for the Chart.js dataset.
     const response = await fetch ("/allsolves/");
-    if (response.ok)
-    {
-        return response.json();
-    }
-    return {};
-}
+    if (!response.ok) return [];
+    data = await response.json();
 
-function scores_over_time (data)
-{
+    // Initialize lookup dictionaries.
     let chals_lookup = new Map();
     let teams_lookup = new Map();
 
+    // Populate chals_lookup.
     data.chals.forEach((chal, index) =>
     {
         let points_info = {
@@ -127,6 +131,7 @@ function scores_over_time (data)
         chals_lookup.set(chal.chal_id, points_info)
     });
 
+    // Populate teams_lookup.
     data.teams.forEach((team) =>
     {
         let team_info = {
@@ -140,17 +145,27 @@ function scores_over_time (data)
         teams_lookup.set(team.team_name, team_info);
     });
 
+    // Process challenge solves, in chronological order,
+    //  and incrementally build graph data.
+    // This is not particularly optimized.
     data.solves.forEach((solve, index) =>
     {
         chal_id = solve.challenge__chal_id;
         time_of_solve = solve.time_of_solve;
-        solved_chal = chals_lookup.get(chal_id);
-        solved_chal.num_solves += 1;
+        team_of_solve = solve.team__team_name;
 
+        solved_chal = chals_lookup.get(chal_id);
+
+        // Register the solve.
+        solved_chal.num_solves += 1;
+        teams_lookup.get(team_of_solve).solved_chals.push(chal_id);
+
+        // Per new solve, recalculate each challenge's current
+        //  value at that point in time.
         let chal_point_in_time = new Map();
         chals_lookup.forEach((chal, chal_id) =>
         {
-            const current_value = calculate_points(
+            const current_value = _calculate_points(
                 chal.min_points,
                 chal.max_points,
                 chal.num_solves,
@@ -159,13 +174,17 @@ function scores_over_time (data)
             chal_point_in_time.set(chal_id, current_value);
         });
 
-        team_of_solve = solve.team__team_name;
-        teams_lookup.get(team_of_solve).solved_chals.push(chal_id);
-
+        // Per new solve, recalculate each team's current points
+        //  total. Insert this into the final array with the time
+        //  of solve.
+        // This creates a `teams*time` array.
         teams_lookup.forEach((team, team_id) =>
         {
-            team_point_in_time = team.solved_chals;
-            const total_points = calculate_team_points (team_point_in_time, chal_point_in_time, time_of_solve);
+            const total_points = _calculate_team_points (
+                team.solved_chals,
+                chal_point_in_time,
+                time_of_solve
+            );
             team.points_over_time.push({
                 x: new Date(time_of_solve),
                 y: total_points
@@ -173,15 +192,7 @@ function scores_over_time (data)
         });
     });
 
-    return teams_lookup;
-}
-
-// Scoreboard
-document.querySelectorAll("#bcds-scoreboard").forEach(async (element) =>
-{
-    data = await get_data();
-    teams_lookup = scores_over_time(data);
-
+    // Format for Charts.js
     dataset = new Array();
     teams_lookup.forEach((team, team_id) => {
         dataset.push({
@@ -190,26 +201,36 @@ document.querySelectorAll("#bcds-scoreboard").forEach(async (element) =>
         });
     });
 
-    const ctx = element;
-    new Chart(ctx, {
+    return dataset;
+}
+
+// Scoreboard
+document.querySelectorAll("#bcds-scoreboard").forEach(async (element) =>
+{
+    dataset = await scores_over_time();
+    
+    const chart = new Chart(element, {
         type: 'line',
-        data: {
-            datasets: dataset
-        },
+        data: {datasets: dataset},
         options: {
             scales: {
-                x: {
-                    type: 'time',
-                    time: { tooltipFormat: 'DD T' }
-                },
-                y: {
-                    type: 'linear',
-                    beginAtZero: true,
-                }
+                x: {type: 'time', time: { tooltipFormat: 'DD T' }},
+                y: {type: 'linear', beginAtZero: true}
             },
             pointStyle: false
         }
     });
+
+    // Update the scoreboard every 10 minutes
+    setInterval(async () =>
+    {
+        dataset = await scores_over_time();
+        if (dataset.length != 0) {
+            chart.data.datasets = dataset;
+            chart.update('none');
+        }
+
+    }, 600000);
 });
 /* end TODO */
 
