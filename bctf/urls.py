@@ -24,6 +24,7 @@ urlpatterns = [
     path ('', FrontPage.as_view(), name='bctf-home'),
     path ('scores/', Scores.as_view(), name='scoreboard'),
     path ('scores.json', ScoresFeed.as_view(), name='scoreboard-feed'), # TODO: change on ctftime
+    path ('allsolves/', GetChallengeSolves.as_view(), name='all-solves'),
     path ('rules/', Rules.as_view(), name='rules'),
     path ('account/', include ('account.urls')),
     path ('chals/', include ('chals.urls')),
