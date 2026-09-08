@@ -5,7 +5,10 @@
 {% block content %}
 
     <h2 class="mb-4 my-3">Scoreboard</h2>
-        <div class="d-flex flex-row justify-content-evenly w-100 mb-4 my-3">
+    <div class="container my-3">
+        <canvas id="bcds-scoreboard"></canvas>
+    </div>
+    <div class="d-flex flex-row justify-content-evenly w-100 mb-4 my-3">
         <a href="{% url 'scoreboard' %}" class="link-secondary link-underline-opacity-0">all</a>
         <a href="{% url 'scoreboard' %}{% querystring bracket='' %}" class="link-secondary link-underline-opacity-0">Open</a>
         {% for b in brackets %}
