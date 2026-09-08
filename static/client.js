@@ -2,92 +2,6 @@ console.log("hewwo :3");
 
 /* Helper functions for the scoreboard */
 
-
-/* end Helper functions for the scoreboard */
-
-
-// Timezone settings
-const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-document.cookie = `timezone=${encodeURIComponent(timezone)}`;
-
-// Logout button
-document.querySelectorAll("#bcds-logout-btn").forEach(element =>
-{
-    element.addEventListener("click", (event) => 
-    {
-        document.getElementById("logoutform").submit();
-    });
-});
-
-// Copy Email Buttons
-document.querySelectorAll(".bcds-copy-btn").forEach(element => 
-{
-    element.addEventListener("click", (event) => 
-    {
-        const button = event.target;
-        const link_id = event.target.dataset.linkId;
-        const link = document.getElementById(link_id).value;
-        navigator.clipboard.writeText(link);
-        const tooltip = new bootstrap.Tooltip(button, {
-            title: 'Copied',
-            customClass: 'border-success'
-        });
-        tooltip.show();
-    });
-});
-
-// Bracket selector and password fields
-document.querySelectorAll("#selectBracketGroup").forEach(element =>
-{
-    element.addEventListener("change", (event) =>
-    {
-        const bracketSelect = event.target.querySelector(".bracket-select:checked")
-        const bracket_pw_id = bracketSelect.dataset.passwordId;
-        var bracket_pw = document.getElementById(bracket_pw_id);
-
-        document.querySelectorAll(".bracket_password").forEach(element =>
-        {
-            element.hidden = true;
-        });
-        bracket_pw.hidden = false;
-    });
-});
-
-// Perform AJAX style error handling on forms
-document.querySelectorAll(".bcds-form").forEach(element =>
-{
-    element.addEventListener("submit", async (event) => 
-    {
-        event.preventDefault();
-
-        const form = event.target;
-        const button = event.submitter;
-        const response = await fetch (form.action,
-        {
-            method: form.method,
-            body: new FormData(form)
-        });
-
-        const result = await response.json();
-        if (response.ok)
-        {
-            window.location.href = result.redirect;
-        }
-        else
-        {
-            const errors = result.errors.join("<br>")
-            var popover = new bootstrap.Popover(button, {
-                content: errors,
-                html: true,
-                customClass: "border-danger-subtle",
-                placement: "right",
-            });
-            popover.show();
-        }
-    });
-});
-
-/* under TODO */
 function _calculate_points (min_points, max_points, num_solves, threshold)
 {
     // max + (min-max)*solves^2/threshold^2
@@ -204,7 +118,91 @@ async function scores_over_time ()
     return dataset;
 }
 
-// Scoreboard
+/* end Helper functions for the scoreboard */
+
+
+// Timezone settings
+const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+document.cookie = `timezone=${encodeURIComponent(timezone)}`;
+
+// Logout button
+document.querySelectorAll("#bcds-logout-btn").forEach(element =>
+{
+    element.addEventListener("click", (event) => 
+    {
+        document.getElementById("logoutform").submit();
+    });
+});
+
+// Copy Email Buttons
+document.querySelectorAll(".bcds-copy-btn").forEach(element => 
+{
+    element.addEventListener("click", (event) => 
+    {
+        const button = event.target;
+        const link_id = event.target.dataset.linkId;
+        const link = document.getElementById(link_id).value;
+        navigator.clipboard.writeText(link);
+        const tooltip = new bootstrap.Tooltip(button, {
+            title: 'Copied',
+            customClass: 'border-success'
+        });
+        tooltip.show();
+    });
+});
+
+// Bracket selector and password fields
+document.querySelectorAll("#selectBracketGroup").forEach(element =>
+{
+    element.addEventListener("change", (event) =>
+    {
+        const bracketSelect = event.target.querySelector(".bracket-select:checked")
+        const bracket_pw_id = bracketSelect.dataset.passwordId;
+        var bracket_pw = document.getElementById(bracket_pw_id);
+
+        document.querySelectorAll(".bracket_password").forEach(element =>
+        {
+            element.hidden = true;
+        });
+        bracket_pw.hidden = false;
+    });
+});
+
+// Perform AJAX style error handling on forms
+document.querySelectorAll(".bcds-form").forEach(element =>
+{
+    element.addEventListener("submit", async (event) => 
+    {
+        event.preventDefault();
+
+        const form = event.target;
+        const button = event.submitter;
+        const response = await fetch (form.action,
+        {
+            method: form.method,
+            body: new FormData(form)
+        });
+
+        const result = await response.json();
+        if (response.ok)
+        {
+            window.location.href = result.redirect;
+        }
+        else
+        {
+            const errors = result.errors.join("<br>")
+            var popover = new bootstrap.Popover(button, {
+                content: errors,
+                html: true,
+                customClass: "border-danger-subtle",
+                placement: "right",
+            });
+            popover.show();
+        }
+    });
+});
+
+// Initialize and populate the scoreboard
 document.querySelectorAll("#bcds-scoreboard").forEach(async (element) =>
 {
     dataset = await scores_over_time();
@@ -232,7 +230,7 @@ document.querySelectorAll("#bcds-scoreboard").forEach(async (element) =>
 
     }, 600000);
 });
-/* end TODO */
+
 
 // Initialize tooltips
 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
