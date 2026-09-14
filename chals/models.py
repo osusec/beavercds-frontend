@@ -11,6 +11,7 @@ class Challenge (models.Model):
     min_points = models.IntegerField ()
     max_points = models.IntegerField ()
     flag = models.CharField (max_length=1000)
+    depends = models.ForeignKey(Challenge, null=True, on_delete=models.SET_NULL)
 
     active = models.BooleanField () # only active challenges get solves
 
