@@ -1,5 +1,143 @@
 console.log("hewwo :3");
 
+/* Helper functions for the scoreboard */
+
+const allsolves_url = document.getElementById("bcds-allsolves").dataset.url;
+const getrankings_url = document.getElementById("bcds-getrankings").dataset.url;
+
+function _calculate_points (min_points, max_points, num_solves_unadj, threshold)
+{
+    // max + (min-max)*solves^2/threshold^2
+    num_solves = Math.max(0, num_solves_unadj - 1);
+    let temp = (num_solves**2)/(threshold**2);
+    temp *= (min_points - max_points);
+    temp += max_points;
+    temp = Math.floor(temp);
+    return Math.max(temp, min_points);
+}
+
+function _calculate_team_points (chals_solved, chals_lookup, time_of_solve)
+{
+    let total = 0;
+    chals_solved.forEach((chal) =>
+    {
+        total += chals_lookup.get(chal);
+    });
+    return total;
+}
+
+async function scores_over_time ()
+{
+    // Fetch data. If there's an error hitting the server,
+    //  then return an empty array for the Chart.js dataset.
+    const response = await fetch (allsolves_url);
+    if (!response.ok) return [];
+    data = await response.json();
+
+    // Initialize lookup dictionaries.
+    let chals_lookup = new Map();
+    let teams_lookup = new Map();
+
+    // Populate chals_lookup.
+    data.chals.forEach((chal, index) =>
+    {
+        let points_info = {
+            "min_points": chal.min_points,
+            "max_points": chal.max_points,
+            "num_solves": 0
+        };
+        chals_lookup.set(chal.chal_id, points_info)
+    });
+
+    // Populate teams_lookup.
+    data.teams.forEach((team) =>
+    {
+        let team_info = {
+            "solved_chals": new Array(),
+            "points_over_time": new Array()
+        };
+        team_info.points_over_time.push({
+            x: new Date(data.ctf_start_time),
+            y: 0
+        });
+        teams_lookup.set(team.team_name, team_info);
+    });
+
+    // Process challenge solves, in chronological order,
+    //  and incrementally build graph data.
+    // This is not particularly optimized.
+    data.solves.forEach((solve, index) =>
+    {
+        chal_id = solve.challenge__chal_id;
+        time_of_solve = solve.time_of_solve;
+        team_of_solve = solve.team__team_name;
+
+        solved_chal = chals_lookup.get(chal_id);
+
+        // Register the solve.
+        solved_chal.num_solves += 1;
+        teams_lookup.get(team_of_solve).solved_chals.push(chal_id);
+
+        // Per new solve, recalculate each challenge's current
+        //  value at that point in time.
+        let chal_point_in_time = new Map();
+        chals_lookup.forEach((chal, chal_id) =>
+        {
+            const current_value = _calculate_points(
+                chal.min_points,
+                chal.max_points,
+                chal.num_solves,
+                data.threshold_solves
+            );
+            chal_point_in_time.set(chal_id, current_value);
+        });
+
+        // Per new solve, recalculate each team's current points
+        //  total. Insert this into the final array with the time
+        //  of solve.
+        // This creates a `teams*time` array.
+        teams_lookup.forEach((team, team_id) =>
+        {
+            const total_points = _calculate_team_points (
+                team.solved_chals,
+                chal_point_in_time,
+                time_of_solve
+            );
+            team.points_over_time.push({
+                x: new Date(time_of_solve),
+                y: total_points
+            });
+        });
+    });
+
+    // Format for Charts.js
+    dataset = new Array();
+    teams_lookup.forEach((team, team_id) => {
+        dataset.push({
+            label: team_id,
+            data: team.points_over_time
+        });
+    });
+
+    return dataset;
+}
+
+async function update_ranking_table ()
+{
+    const response = await fetch (getrankings_url + window.location.search);
+    if (!response.ok) return;
+    const rankings = await response.text();
+
+    const ranking_table = document.querySelector("#bcds-rankings");
+
+    // Dangerous. This is relying on the server-side template
+    //  engine for XSS protection.
+    ranking_table.innerHTML = rankings;
+}
+
+/* end Helper functions for the scoreboard */
+
+
 // Timezone settings
 const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 document.cookie = `timezone=${encodeURIComponent(timezone)}`;
@@ -80,6 +218,48 @@ document.querySelectorAll(".bcds-form").forEach(element =>
         }
     });
 });
+
+// Initialize and populate the scoreboard
+document.querySelectorAll("#bcds-scoreboard").forEach(async (element) =>
+{
+    await update_ranking_table();
+    dataset = await scores_over_time();
+    
+    const chart = new Chart(element, {
+        type: 'line',
+        data: {datasets: dataset},
+        options: {
+            scales: {
+                x: {type: 'time', time: { tooltipFormat: 'DD T' }},
+                y: {type: 'linear', beginAtZero: true}
+            },
+            pointStyle: false
+        }
+    });
+
+    // Update the scoreboard every 10 minutes
+    setInterval(async () =>
+    {
+        dataset = await scores_over_time();
+        if (dataset.length != 0) {
+            chart.data.datasets = dataset;
+            chart.update('none');
+        }
+        await update_ranking_table();
+
+    }, 600000);
+});
+
+// Make scoreboard fullscreen-able for projecting in-room
+document.querySelectorAll("#bcds-fullscreen-btn").forEach((element) =>
+{
+    const scoreboard = document.querySelector("#bcds-scoreboard");
+
+    element.addEventListener("click", (event) => {
+        scoreboard.requestFullscreen();
+    });
+});
+
 
 // Initialize tooltips
 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
