@@ -250,6 +250,16 @@ document.querySelectorAll("#bcds-scoreboard").forEach(async (element) =>
     }, 600000);
 });
 
+// Make scoreboard fullscreen-able for projecting in-room
+document.querySelectorAll("#bcds-fullscreen-btn").forEach((element) =>
+{
+    const scoreboard = document.querySelector("#bcds-scoreboard");
+
+    element.addEventListener("click", (event) => {
+        scoreboard.requestFullscreen();
+    });
+});
+
 
 // Initialize tooltips
 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
