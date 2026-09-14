@@ -2,6 +2,9 @@ console.log("hewwo :3");
 
 /* Helper functions for the scoreboard */
 
+const allsolves_url = document.getElementById("bcds-allsolves").dataset.url;
+const getrankings_url = document.getElementById("bcds-getrankings").dataset.url;
+
 function _calculate_points (min_points, max_points, num_solves, threshold)
 {
     // max + (min-max)*solves^2/threshold^2
@@ -26,7 +29,7 @@ async function scores_over_time ()
 {
     // Fetch data. If there's an error hitting the server,
     //  then return an empty array for the Chart.js dataset.
-    const response = await fetch ("/allsolves/");
+    const response = await fetch (allsolves_url);
     if (!response.ok) return [];
     data = await response.json();
 
@@ -120,7 +123,7 @@ async function scores_over_time ()
 
 async function update_ranking_table ()
 {
-    const response = await fetch ("/rankings/" + window.location.search);
+    const response = await fetch (getrankings_url + window.location.search);
     if (!response.ok) return;
     const rankings = await response.text();
 
