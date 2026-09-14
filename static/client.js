@@ -118,6 +118,19 @@ async function scores_over_time ()
     return dataset;
 }
 
+async function update_ranking_table ()
+{
+    const response = await fetch ("/rankings/" + window.location.search);
+    if (!response.ok) return;
+    const rankings = await response.text();
+
+    const ranking_table = document.querySelector("#bcds-rankings");
+
+    // Dangerous. This is relying on the server-side template
+    //  engine for XSS protection.
+    ranking_table.innerHTML = rankings;
+}
+
 /* end Helper functions for the scoreboard */
 
 
@@ -205,6 +218,7 @@ document.querySelectorAll(".bcds-form").forEach(element =>
 // Initialize and populate the scoreboard
 document.querySelectorAll("#bcds-scoreboard").forEach(async (element) =>
 {
+    await update_ranking_table();
     dataset = await scores_over_time();
     
     const chart = new Chart(element, {
@@ -227,6 +241,7 @@ document.querySelectorAll("#bcds-scoreboard").forEach(async (element) =>
             chart.data.datasets = dataset;
             chart.update('none');
         }
+        await update_ranking_table();
 
     }, 600000);
 });

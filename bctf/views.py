@@ -19,6 +19,13 @@ class FrontPage (View):
 
 class Scores (CTFStartMixin, View):
     def get (self, request):
+        brackets = CTFTeam_Bracket.objects.distinct('bracket_name')
+
+        return render (request, "scoreboard.html", {'scores': [], 'brackets': brackets})
+
+
+class GetRankings (CTFStartMixin, View):
+    def get (self, request):
         # bracket name, which is unique
         bracket = request.GET.get('bracket')
 
@@ -50,9 +57,7 @@ class Scores (CTFStartMixin, View):
         elif bracket == "":
             score_entries = score_entries.filter(bracket=None)
 
-        brackets = CTFTeam_Bracket.objects.distinct('bracket_name')
-
-        return render (request, "scoreboard.html", {'scores': score_entries, 'brackets': brackets})
+        return render (request, "partials/rankings_table.html", {'scores': score_entries})
 
 
 # For CTFTime
