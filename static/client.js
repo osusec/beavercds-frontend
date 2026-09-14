@@ -5,9 +5,10 @@ console.log("hewwo :3");
 const allsolves_url = document.getElementById("bcds-allsolves").dataset.url;
 const getrankings_url = document.getElementById("bcds-getrankings").dataset.url;
 
-function _calculate_points (min_points, max_points, num_solves, threshold)
+function _calculate_points (min_points, max_points, num_solves_unadj, threshold)
 {
     // max + (min-max)*solves^2/threshold^2
+    num_solves = Math.max(0, num_solves_unadj - 1);
     let temp = (num_solves**2)/(threshold**2);
     temp *= (min_points - max_points);
     temp += max_points;

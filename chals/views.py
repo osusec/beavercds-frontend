@@ -17,9 +17,13 @@ class ListChal (LoginRequiredMixin, CTFStartMixin, View):
 
         chals = (Challenge.objects
             .filter(active=True)
-            .annotate (num_solves=Count(
+            .annotate (num_solves_unadj=Count(
                 'challengesolve',
                 filter=Q(challengesolve__team__is_active=True)
+            ))
+            .annotate(num_solves=Greatest(
+                0,
+                F('num_solves_unadj') - 1
             ))
             .annotate(
                 current_points_value=Greatest(

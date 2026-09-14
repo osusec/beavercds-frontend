@@ -32,7 +32,11 @@ class GetRankings (CTFStartMixin, View):
         solve_count_subq = (ChallengeSolve.objects
             .filter(challenge=OuterRef('challengesolve__challenge__pk'), team__is_active=True)
             .values('challenge')
-            .annotate(num_solves=Count('challenge'))
+            .annotate(num_solves_unadj=Count('challenge'))
+            .annotate(num_solves=Greatest(
+                0,
+                F('num_solves_unadj') - 1
+            ))
             .values('num_solves')
         )
 
@@ -67,7 +71,11 @@ class ScoresFeed (CTFStartMixin, View):
         solve_count_subq = (ChallengeSolve.objects
             .filter(challenge=OuterRef('challengesolve__challenge__pk'), team__is_active=True)
             .values('challenge')
-            .annotate(num_solves=Count('challenge'))
+            .annotate(num_solves_unadj=Count('challenge'))
+            .annotate(num_solves=Greatest(
+                0,
+                F('num_solves_unadj') - 1
+            ))
             .values('num_solves')
         )
 
