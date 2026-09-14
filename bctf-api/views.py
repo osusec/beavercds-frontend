@@ -27,11 +27,14 @@ class ResolveState(View):
         # If not, fail early
         if not _check_unique_ids(new_json_state):
             return JsonResponse("Duplicate IDs present.", status=400)
+        if not _check_coherent_depends(new_json_state):
+            return JsonResponse("Nonexistent IDs present in dependencies.", status=400)
         if not _check_complete_chal_fields(new_json_state):
             return JsonResponse("Missing required fields.", status=400)
 
         result_state = []
         removed_state = []
+        dependent_state = [] # Of tuples.
 
         # Begin changing state
         with transaction.atomic():
@@ -62,6 +65,9 @@ class ResolveState(View):
                     chal.active = True
                     chal.save()
 
+                    if new_state['depends']:
+                        dependent_state.append((new_state[chal_id, new_state['depends']]))
+
                     chal_files = ChallengeFile.objects.filter(challenge=chal).delete()
                     for file in new_state['files']:
                         chal_file = ChallengeFile(
@@ -86,6 +92,10 @@ class ResolveState(View):
                         active = True
                     )
                     chal.save()
+
+                    if new_state['depends']:
+                        dependent_state.append((new_state[chal_id, new_state['depends']]))
+
                     for file in new_state['files']:
                         chal_file = ChallengeFile(
                             challenge=chal,
@@ -104,6 +114,12 @@ class ResolveState(View):
                     chal.delete()
                 # else: leave inactive
                 removed_state.append(chal_id)
+
+            # Input challenge dependencies
+            for (chal_id, depends_id) in dependent_state:
+                depends_chal = Challenge.objects.filter(pk=depends_id)
+                Challenge.objects.filter(pk=chal_id).update(depends=depends_chal)
+
         # end: with transaction.atomic()
 
         return JsonResponse({"current": result_state, "removed": removed_state})
@@ -179,6 +195,8 @@ class UpdateBrackets(View):
         return JsonResponse({"current": result_state, "removed": list(current_state)})
 
 
+# Helper functions below
+
 def _check_unique_ids (new_chal_state):
     # Check that all ids are unique
     new_ids = set()
@@ -202,6 +220,18 @@ def _check_complete_chal_fields (new_chal_state):
             # Missing required fields, fail
             return False
     return True
+
+def _check_coherent_depends (new_chal_state):
+    new_ids = set()
+    for c in new_chal_state:
+        new_ids.add(c['id'])
+
+    for c in new_chal_state:
+        if not c['depends'] in new_ids:
+            # Dependent chal ID not found
+            return False
+    return True
+
 
 def _check_unique_brackets (new_bracket_state):
     # Check that all names are unique

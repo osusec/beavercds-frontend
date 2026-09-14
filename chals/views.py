@@ -55,6 +55,10 @@ class SubmitFlag (CTFStartMixin, LoginRequiredMixin, CTFEndMixin, View):
                 # Team has already submitted this flag before
                 return JsonResponse({'redirect': reverse_lazy('chals-list')})
 
+            if challenge.depends and not ChallengeSolve.objects.filter(challenge=challenge.depends, team=team).exists():
+                # Team has not solved the prerequisite challenge
+                return JsonResponse({'errors':[f"${challenge.depends.name} must be solved first."]}, status=400)
+
             if submitted_flag == challenge.flag:
                 new_solve = ChallengeSolve (challenge=challenge, team=team)
                 new_solve.save()
