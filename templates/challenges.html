@@ -23,26 +23,32 @@
                     <p>{{ challenge.category }}</p>
                 </div>
 
-                <div class="w-100">
-                    {% load markdownify %}
-                    {{ challenge.description|markdownify }}
-                </div>
-
-                <div class="d-flex flex-row flex-wrap justify-content-center w-100 mb-3">
-                    {% for file in files %}
-                        <a href="{{ file.url }}" class="link-secondary link-underline-opacity-0 mx-4">{{ file.basename }}</a>
-                    {% endfor %}
-                </div>
-
-                {% if not challenge.solved %}
-                <form class="bcds-form" method="post" action="{% url 'submit-flag' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="challenge" value="{{ challenge.chal_id }}">
-                    <div class="input-group">
-                        <input type="text" class="form-control border-secondary mx-1" name="submitted_flag" placeholder="Flag">
-                        <button class="btn btn-outline-secondary mx-1" type="submit">Submit</button>
+                {% if not challenge.solved_depends %}
+                    <div class="d-flex flex-row flex-wrap justify-content-center w-100">
+                        <p>You must first solve {{ challenge.depends.name }} to unlock this challenge.</p>
                     </div>
-                </form>
+                {% else %}
+                    <div class="w-100">
+                        {% load markdownify %}
+                        {{ challenge.description|markdownify }}
+                    </div>
+
+                    <div class="d-flex flex-row flex-wrap justify-content-center w-100 mb-3">
+                        {% for file in files %}
+                            <a href="{{ file.url }}" class="link-secondary link-underline-opacity-0 mx-4">{{ file.basename }}</a>
+                        {% endfor %}
+                    </div>
+
+                    {% if not challenge.solved %}
+                    <form class="bcds-form" method="post" action="{% url 'submit-flag' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="challenge" value="{{ challenge.chal_id }}">
+                        <div class="input-group">
+                            <input type="text" class="form-control border-secondary mx-1" name="submitted_flag" placeholder="Flag">
+                            <button class="btn btn-outline-secondary mx-1" type="submit">Submit</button>
+                        </div>
+                    </form>
+                    {% endif %}
                 {% endif %}
             </div>
         {% endfor %}

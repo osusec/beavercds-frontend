@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import *
-from django.db.models import Exists, OuterRef, F, Q, Max, Case, When, Count
+from django.db.models import Exists, OuterRef, F, Q, Max, Case, When, Count, Value, BooleanField
 from django.db.models.functions import Rank, Greatest
 from .forms import SubmitFlagForm
 from django.urls import reverse_lazy
@@ -30,6 +30,14 @@ class ListChal (LoginRequiredMixin, CTFStartMixin, View):
             .annotate (solved=Exists(
                 ChallengeSolve.objects
                 .filter(challenge=OuterRef('pk'), team=team)
+            ))
+            .annotate (solved_depends=Case(
+                When(depends__isnull=True, then=Value(True)),
+                default=Exists(
+                    ChallengeSolve.objects
+                    .filter(challenge=OuterRef('depends'), team=team)
+                ),
+                output_field=BooleanField()
             ))
         )
 
