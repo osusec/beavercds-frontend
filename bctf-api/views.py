@@ -22,15 +22,15 @@ class ResolveState(View):
         try:
             new_json_state = json.loads(request.body.decode('utf-8'))
         except json.decoder.JSONDecodeError:
-            return JsonResponse("Missing or bad JSON provided.", status=400)
+            return JsonResponse({"status": "Missing or bad JSON provided."}, status=400)
         # Check that all ids are unique and that all fields are present
         # If not, fail early
-        if not _check_unique_ids(new_json_state):
-            return JsonResponse("Duplicate IDs present.", status=400)
-        if not _check_coherent_depends(new_json_state):
-            return JsonResponse("Nonexistent IDs present in dependencies.", status=400)
         if not _check_complete_chal_fields(new_json_state):
-            return JsonResponse("Missing required fields.", status=400)
+            return JsonResponse({"status": "Missing required fields."}, status=400)
+        if not _check_unique_ids(new_json_state):
+            return JsonResponse({"status": "Duplicate IDs present."}, status=400)
+        if not _check_coherent_depends(new_json_state):
+            return JsonResponse({"status": "Nonexistent IDs present in dependencies."}, status=400)
 
         result_state = []
         removed_state = []
@@ -62,11 +62,12 @@ class ResolveState(View):
                     chal.min_points = new_state['min_points']
                     chal.max_points = new_state['max_points']
                     chal.flag = new_state['flag']
+                    depends = None
                     chal.active = True
                     chal.save()
 
                     if new_state['depends']:
-                        dependent_state.append((new_state[chal_id, new_state['depends']]))
+                        dependent_state.append((new_state['id'], new_state['depends']))
 
                     chal_files = ChallengeFile.objects.filter(challenge=chal).delete()
                     for file in new_state['files']:
@@ -89,12 +90,13 @@ class ResolveState(View):
                         min_points = new_state['min_points'],
                         max_points = new_state['max_points'],
                         flag = new_state['flag'],
+                        depends = None,
                         active = True
                     )
                     chal.save()
 
                     if new_state['depends']:
-                        dependent_state.append((new_state[chal_id, new_state['depends']]))
+                        dependent_state.append((new_state['id'], new_state['depends']))
 
                     for file in new_state['files']:
                         chal_file = ChallengeFile(
@@ -117,7 +119,7 @@ class ResolveState(View):
 
             # Input challenge dependencies
             for (chal_id, depends_id) in dependent_state:
-                depends_chal = Challenge.objects.filter(pk=depends_id)
+                depends_chal = Challenge.objects.get(pk=depends_id)
                 Challenge.objects.filter(pk=chal_id).update(depends=depends_chal)
 
         # end: with transaction.atomic()
@@ -216,6 +218,7 @@ def _check_complete_chal_fields (new_chal_state):
         (not "description" in c)  or
         (not "min_points" in c) or
         (not "max_points" in c)  or
+        (not "depends" in c) or
         (not "flag" in c)):
             # Missing required fields, fail
             return False
@@ -227,7 +230,7 @@ def _check_coherent_depends (new_chal_state):
         new_ids.add(c['id'])
 
     for c in new_chal_state:
-        if not c['depends'] in new_ids:
+        if not c['depends'] in new_ids and not c['depends'] == None:
             # Dependent chal ID not found
             return False
     return True
