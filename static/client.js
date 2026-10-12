@@ -219,6 +219,45 @@ document.querySelectorAll(".bcds-form").forEach(element =>
     });
 });
 
+document.querySelectorAll(".bcds-recoverteam").forEach(element =>
+{
+    element.addEventListener("submit", async (event) =>
+    {
+        event.preventDefault();
+
+        const form = event.target;
+        const button = event.submitter;
+        const response = await fetch (form.action,
+        {
+            method: form.method,
+            body: new FormData(form)
+        });
+
+        const result = await response.json();
+        if (response.ok)
+        {
+            let token_div = document.getElementById(form.id+"-after");
+            let token_field = document.getElementById(form.id+"-after-input");
+
+            token_field.value = token_field.placeholder + result.token;
+            button.hidden = true;
+            token_div.hidden = false;
+        }
+        else
+        {
+            const errors = result.errors.join("<br>")
+            var popover = new bootstrap.Popover(button, {
+                content: errors,
+                html: true,
+                customClass: "border-danger-subtle",
+                placement: "right",
+            });
+            popover.show();
+        }
+    });
+});
+
+
 // Initialize and populate the scoreboard
 document.querySelectorAll("#bcds-scoreboard").forEach(async (element) =>
 {

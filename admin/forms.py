@@ -9,3 +9,6 @@ class ChangeBracketAdmForm(forms.Form):
 class ActivateDeactivateTeamForm (forms.Form):
     # Not worrying about redundant activations/deactivations
     team = forms.ModelChoiceField(queryset=CTFTeam.objects.all())
+
+class RecoverTeamAdmForm (forms.Form):
+    team = forms.ModelChoiceField(queryset=CTFTeam.objects.all())

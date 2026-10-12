@@ -14,4 +14,5 @@ urlpatterns = [
     path ('teams/changebracket/', ChangeBracketAdm.as_view(), name='change_bracket_adm'),
     path ('teams/deactivate/', DeactivateTeam.as_view(), name='deactivate-team'),
     path ('teams/activate/', ActivateTeam.as_view(), name='activate-team'),
+    path ('teams/recover/', RecoverTeam.as_view(), name='recover-team'),
 ]
