@@ -47,11 +47,8 @@
             <thead>
                 <tr>
                     <th scope="col"></th>
+                    <th scope="col"><!-- Dropdown --></th>
                     <th scope="col">Team</th>
-                    <th scope="col"><!-- Collapse emails --></th>
-                    <th scope="col">Contact Emails</th>
-                    <th scope="col"><!-- Edit bracket button --></th>
-                    <th scope="col">Bracket</th>
                     <th scope="col">Active</th>
                 </tr>
             </thead>
@@ -59,30 +56,8 @@
                 {% for team, emails in teams_with_emails %}
                     <tr>
                         <td></td>
+                        <td><i class="bi bi-chevron-down btn btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#teamCollapse-{{ team.pk }}" aria-expanded="false" aria-controls="teamCollapse-{{ team.pk }}"></i></td>
                         <td>{{ team.team_name }}</td>
-                        <td class="text-end">
-                            {% if emails|length > 1 %}
-                                <i class="bi bi-chevron-down btn btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#teamEmailsCollapse-{{ team.pk }}" aria-expanded="false" aria-controls="teamEmailsCollapse-{{ team.pk }}"></i>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if emails|length > 0 %}
-                                <p>{{ emails.0.email }}</p>
-                                <div class="collapse" id="teamEmailsCollapse-{{team.pk}}">
-                                    {% for email in emails|slice:"1:" %}
-                                        <p>{{email.email}}</p>
-                                    {% endfor %}
-                                </div>
-                            {% else %}
-                                <p class="text-danger">None provided</p>
-                            {% endif %}
-                        </td>
-                        <td class="text-end">
-                            <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#teamBracketCollapse-{{ team.pk }}" aria-expanded="false" aria-controls="teamBracketCollapse-{{ team.pk }}"><i class="bi bi-pen"></i></button>
-                        </td>
-                        <td>
-                            {% if team.bracket %}{{ team.bracket.bracket_name }}{% else %}Open{% endif %}
-                        </td>
                         <td>
                             {% if team.is_active %}
                             <form class="bcds-form" method="post" action="{% url 'deactivate-team' %}" id="deactivate_{{ team.pk }}">
@@ -99,19 +74,47 @@
                             {% endif %}
                         </td>
                     </tr>
-                    <tr class="collapse" id="teamBracketCollapse-{{ team.pk }}">
-                        <td colspan="7">
-                            <form class="bcds-form input-group d-flex flex-row my-2" method="post" action="{% url 'change_bracket_adm' %}">
-                                <select class="form-select form-control mx-1" name="bracket" id="selectBracketGroup">
-                                        <option {% if not team.bracket %}selected{% endif %} value="">Open</option>
-                                    {% for bracket in brackets %}
-                                        <option {% if team.bracket == bracket %}selected{% endif %} value="{{ bracket.pk }}">{{ bracket.bracket_name }}</option>
-                                    {% endfor %}
-                                </select>
-                                <input type="hidden" name="team" value="{{ team.pk }}">
-                                {% csrf_token %}
-                                <button class="btn btn-outline-secondary mx-1" type="submit">Change bracket</button>
-                            </form>
+                    <tr hidden></tr>
+                    <tr class="collapse" id="teamCollapse-{{ team.pk }}">
+                        <td colspan="4">
+                            <div class="container-lg d-flex flex-column align-items-center w-100">
+                                <div class="d-flex flex-column align-items-center w-100 my-2">
+                                    <p><b>Team Bracket</b></p>
+                                    <form class="bcds-form input-group d-flex flex-row" method="post" action="{% url 'change_bracket_adm' %}">
+                                        <select class="form-select form-control mx-1" name="bracket" id="selectBracketGroup">
+                                                <option {% if not team.bracket %}selected{% endif %} value="">Open</option>
+                                            {% for bracket in brackets %}
+                                                <option {% if team.bracket == bracket %}selected{% endif %} value="{{ bracket.pk }}">{{ bracket.bracket_name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <input type="hidden" name="team" value="{{ team.pk }}">
+                                        {% csrf_token %}
+                                        <button class="btn btn-outline-secondary mx-1" type="submit">Change bracket</button>
+                                    </form>
+                                </div>
+                                <div class="d-flex flex-column align-items-center w-100 my-2">
+                                    <p><b>Account Recovery</b></p>
+                                    <div class="input-group mb-2" id="recoverteam-{{ team.pk }}-after" hidden>
+                                        <input type="text" id="recoverteam-{{ team.pk }}-after-input" class="form-control border-secondary mx-1" placeholder="{{ request.scheme }}://{{ request.get_host }}{% url 'token_auth' %}{% querystring token='' %}" value="{{ request.scheme }}://{{ request.get_host }}{% url 'token_auth' %}{% querystring token='' %}">
+                                        <button class="btn btn-outline-secondary mx-1 bcds-copy-btn" type="button" data-link-id="recoverteam-{{ team.pk }}-after-input" >Copy</button>
+                                    </div>
+                                    <form class="bcds-recoverteam input-group d-flex flex-row" method="post" id="recoverteam-{{ team.pk }}" action="{% url 'recover-team' %}">
+                                        <input type="hidden" name="team" value="{{ team.pk }}">
+                                        {% csrf_token %}
+                                    </form>
+                                    <button class="btn btn-outline-secondary mx-1 w-100" form="recoverteam-{{ team.pk }}" type="submit">Generate Link</button>
+                                </div>
+                                <div class="d-flex flex-column align-items-center w-100 my-2">
+                                    <p><b>Contact Emails</b></p>
+                                    {% if emails|length > 0 %}
+                                        {% for email in emails %}
+                                            <p>{{email.email}}</p>
+                                        {% endfor %}
+                                    {% else %}
+                                        <p class="text-danger">None provided</p>
+                                    {% endif %}
+                                </div>
+                            </div>
                         </td>
                     </tr>
                 {% endfor %}

@@ -4,6 +4,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
 from django.db.models import Exists, OuterRef, Count, Sum, Window, F, Q, Case, When, Subquery, Min
 from django.db.models.functions import Rank, Greatest
+import secrets
+from django.db import IntegrityError
 from bctf.settings import THRESHOLD_SOLVES
 from .mixins import AdminRequiredMixin
 from chals.models import *
@@ -187,5 +189,30 @@ class ActivateTeam (LoginRequiredMixin, AdminRequiredMixin, View):
                 team_a.is_active = True
                 team_a.save()
                 return JsonResponse({'redirect': reverse_lazy('admin-teams')})
+        else:
+            return JsonResponse({'errors':['Team not found.']}, status=404)
+
+class RecoverTeam (LoginRequiredMixin, AdminRequiredMixin, View):
+    def  post (self, request):
+        self_team = request.user
+
+        form = RecoverTeamAdmForm(request.POST)
+        if form.is_valid():
+            team_a = form.cleaned_data['team']
+
+            saved = False
+            while not saved:
+                try:
+                    new_token = secrets.token_urlsafe(TOKEN_LENGTH)
+                    team_token_obj = CTFTeam_LongtermTokens(
+                        team=team_a,
+                        token=new_token
+                    )
+                    team_token_obj.save()
+                    saved = True
+                except IntegrityError:
+                    saved = False
+            print(f"token {new_token}")
+            return JsonResponse({'token': new_token})
         else:
             return JsonResponse({'errors':['Team not found.']}, status=404)
