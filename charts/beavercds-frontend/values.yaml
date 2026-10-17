@@ -36,6 +36,24 @@ adminUser:
   username: adminuser
   password: asdfasdf # TODO: allow fromSecret: here
 
+# Database connection settings.
+database:
+  # Use an existing secret for database credentials. This secret must have the
+  # following keys: host, post, username, password, dbname.
+  #
+  # (This is the same format used by CloudNativePG-style credentials secrets,
+  # and so those can be directly used here.)
+  existingSecret: ""
+
+  # If `existingSecret` is not set, the following can be used to specify the
+  # database credentials instead. This is *not* recommended for production use!
+  # Use `existingSecret` to keep credentials out of the helm values.
+  host: ""
+  port: "5432"
+  username: postgres
+  password: ""
+  dbname: bctf
+
 # Deployment/Pod settings
 # scoreboard:
 replicaCount: 1

@@ -34,6 +34,9 @@ spec:
 
         command: ["python3", "manage.py", "lockedmigrate", "--noinput"]
 
+        env:
+          {{- include "beavercds-frontend.dbEnv" . | nindent 10 }}
+
         volumeMounts:
           - name: django-settings
             mountPath: /app/bctf/helm_settings.py

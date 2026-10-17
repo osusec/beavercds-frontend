@@ -57,6 +57,7 @@ spec:
               value: bctf
             - name: PORT
               value: '8000'
+            {{- include "beavercds-frontend.dbEnv" . | nindent 12 }}
 
           ports:
             - name: frontend
@@ -101,6 +102,7 @@ spec:
               value: bctf-api
             - name: PORT
               value: '8001'
+            {{- include "beavercds-frontend.dbEnv" . | nindent 12 }}
 
           ports:
             - name: frontend-api
