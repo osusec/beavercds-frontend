@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.staticfiles',
     'markdownify.apps.MarkdownifyConfig',
+    'djk8s',
 ]
 
 MIDDLEWARE = [
