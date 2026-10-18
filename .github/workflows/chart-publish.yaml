@@ -1,0 +1,58 @@
+name: Chart Publish
+on:
+  push:
+    branches: [main]
+    # Publish semver tags as releases.
+    tags: ["v*.*.*"]
+  pull_request:
+    paths:
+      - charts/beavercds-frontend/**
+      - .github/workflows/chart-publish.yaml
+
+env:
+  CHART_DIR: charts/beavercds-frontend
+  # OCI registry image to push the packaged chart to.
+  IMAGE: ghcr.io/${{ github.repository_owner }}/beavercds-frontend/chart
+
+jobs:
+  publish-chart:
+    name: Publish Chart to GHCR
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Lint chart
+        run: helm lint ${{ env.CHART_DIR }}
+
+      - name: Determine chart version
+        id: version
+        run: |
+          # On a semver tag build, override the chart/app version with the tag
+          # (stripping the leading "v"); otherwise package with whatever is
+          # pinned in Chart.yaml.
+          if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+            version="${GITHUB_REF_NAME#v}"
+            echo "args=--version ${version} --app-version ${version}" >> "$GITHUB_OUTPUT"
+          else
+            echo "args=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Package chart
+        run: helm package ${{ env.CHART_DIR }} ${STEPS_VERSION_OUTPUTS_ARGS} --destination dist
+        env:
+          STEPS_VERSION_OUTPUTS_ARGS: ${{ steps.version.outputs.args }}
+
+      - name: Log into GHCR
+        if: github.event_name != 'pull_request'
+        run: helm registry login ghcr.io --username ${GITHUB_ACTOR} --password ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push chart
+        if: github.event_name != 'pull_request'
+        run: helm push dist/*.tgz oci://${IMAGE}
