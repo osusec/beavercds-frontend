@@ -13,6 +13,7 @@ spec:
     metadata:
       labels:
         {{- include "beavercds-frontend.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: migrations
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
