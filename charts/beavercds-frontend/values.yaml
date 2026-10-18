@@ -31,10 +31,15 @@ config: |
   # dynamic scoring
   THRESHOLD_SOLVES = 20
 
+# Settings for the scoreboard admin user/team.
+# These will *only take effect* during the first install!
 adminUser:
+  # Whether to create an admin user.
   create: true
+  # Username (team name) of the admin user.
   username: adminuser
-  password: asdfasdf # TODO: allow fromSecret: here
+  # Password to set for the admin user. Leave blank to autogenerate one.
+  password: ""
 
 # Database connection settings.
 database:
