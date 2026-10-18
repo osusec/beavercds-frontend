@@ -1,0 +1,175 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: {{ include "beavercds-frontend.fullname" . }}
+  labels:
+    {{- include "beavercds-frontend.labels" . | nindent 4 }}
+
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "beavercds-frontend.selectorLabels" . | nindent 6 }}
+
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "beavercds-frontend.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      # we don't need access to the k8s api
+      automountServiceAccountToken: false
+
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      initContainers:
+        - {{- include "beavercds-frontend.initWaitForPostgres" . | nindent 10 }}
+
+      containers:
+        - name: frontend
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+          env:
+            - name: APP
+              value: bctf
+            - name: PORT
+              value: '8000'
+            - name: HOME
+              value: /tmp
+            {{- include "beavercds-frontend.allowedHostsEnv" . | nindent 12 }}
+            {{- include "beavercds-frontend.dbEnv" . | nindent 12 }}
+
+          envFrom:
+            {{- include "beavercds-frontend.appEnvFrom" . | nindent 12 }}
+            {{- with .Values.extraEnvFrom }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+
+          ports:
+            - name: frontend
+              containerPort: 8000
+              protocol: TCP
+
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+          # initial basic probes against the frontpage
+          livenessProbe:
+            httpGet:
+              path: /
+              port: frontend
+              httpHeaders:
+                - name: Host
+                  value: localhost
+          readinessProbe:
+            httpGet:
+              path: /
+              port: frontend
+              httpHeaders:
+                - name: Host
+                  value: localhost
+
+          volumeMounts:
+            - name: django-settings
+              mountPath: /app/bctf/helm_settings.py
+              subPath: helm_settings.py
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+            {{- with .Values.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+
+        - name: frontend-api
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+          env:
+            - name: APP
+              value: bctf-api
+            - name: PORT
+              value: '8001'
+            - name: HOME
+              value: /tmp
+            {{- include "beavercds-frontend.allowedHostsEnv" . | nindent 12 }}
+            {{- include "beavercds-frontend.dbEnv" . | nindent 12 }}
+
+          envFrom:
+            {{- include "beavercds-frontend.appEnvFrom" . | nindent 12 }}
+            {{- with .Values.extraEnvFrom }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+
+          ports:
+            - name: frontend-api
+              containerPort: 8001
+              protocol: TCP
+
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+          volumeMounts:
+            - name: django-settings
+              mountPath: /app/bctf/helm_settings.py
+              subPath: helm_settings.py
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+            {{- with .Values.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+
+      volumes:
+        - name: django-settings
+          configMap:
+            name: {{ include "beavercds-frontend.fullname" . }}-django-settings
+        - name: tmp
+          emptyDir: {}
+        {{- with .Values.volumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

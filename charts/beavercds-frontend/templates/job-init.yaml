@@ -1,0 +1,111 @@
+{{- if .Values.adminUser.create }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "beavercds-frontend.fullname" . }}-init-{{ .Release.Revision }}
+  labels:
+    {{- include "beavercds-frontend.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "2"
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      labels:
+        {{- include "beavercds-frontend.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: init
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      serviceAccountName: {{ include "beavercds-frontend.serviceAccountName" . }}
+
+      restartPolicy: Never
+
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      initContainers:
+        - {{- include "beavercds-frontend.initWaitForPostgres" . | nindent 10 }}
+
+      containers:
+      - name: frontend-init
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+
+        # Manually replicate the idempotent `ensureadmin` command from
+        # django-kubernetes. We are using a custom User model that doesn't define
+        # EMAIL_FIELD, and this breaks the command as it expects that field to be present.
+        # Once upstream fixes this, this can go back to using `ensureadmin`.
+        #
+        # Upstream issue:
+        # https://github.com/rotationalio/django-kubernetes/issues/13
+        # command: ["python3", "manage.py", "ensureadmin"]
+        command: ["python3", "manage.py", "shell", "-c"]
+        args:
+          - |
+            import os
+            from django.contrib.auth import get_user_model
+
+            User = get_user_model()
+            username = os.environ["DJANGO_ADMIN_USERNAME"]
+            password = os.environ["DJANGO_ADMIN_PASSWORD"]
+
+            if User.objects.filter(**{User.USERNAME_FIELD: username}).exists():
+                print(f"admin user {username!r} already exists, skipping creation")
+            else:
+                User.objects.create_superuser(username, password)
+                print(f"created admin user {username!r}")
+
+        env:
+          {{- include "beavercds-frontend.allowedHostsEnv" . | nindent 10 }}
+          {{- include "beavercds-frontend.dbEnv" . | nindent 10 }}
+
+        envFrom:
+          {{- include "beavercds-frontend.appEnvFrom" . | nindent 10 }}
+          - secretRef:
+              name: {{ include "beavercds-frontend.adminSecretName" . | quote }}
+          {{- with .Values.extraEnvFrom }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+
+        {{- with .Values.securityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+
+        volumeMounts:
+          - name: django-settings
+            mountPath: /app/bctf/helm_settings.py
+            subPath: helm_settings.py
+            readOnly: true
+          {{- with .Values.volumeMounts }}
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+      volumes:
+        - name: django-settings
+          configMap:
+            name: {{ include "beavercds-frontend.fullname" . }}-django-settings
+        {{- with .Values.volumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

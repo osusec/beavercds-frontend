@@ -1,0 +1,98 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "beavercds-frontend.fullname" . }}-migrations-{{ .Release.Revision }}
+  labels:
+    {{- include "beavercds-frontend.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "1"
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      labels:
+        {{- include "beavercds-frontend.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: migrations
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      restartPolicy: Never
+
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      initContainers:
+        - {{- include "beavercds-frontend.initWaitForPostgres" . | nindent 10 }}
+
+      containers:
+      - name: frontend-migrations
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+
+        # account/chals migrations aren't vendored into the repo. To stay
+        # durable as new apps/migration dirs are added, copy the whole app
+        # tree into a writable emptyDir and generate+apply migrations from
+        # there, rather than mounting individual migrations directories.
+        command: ["sh", "-c"]
+        args:
+          - |
+            set -e
+            cp -a /app/. /workdir/
+            cd /workdir
+            python3 manage.py makemigrations --noinput
+            python3 manage.py lockedmigrate --noinput
+
+        env:
+          {{- include "beavercds-frontend.allowedHostsEnv" . | nindent 10 }}
+          {{- include "beavercds-frontend.dbEnv" . | nindent 10 }}
+
+        envFrom:
+          {{- include "beavercds-frontend.appEnvFrom" . | nindent 10 }}
+          {{- with .Values.extraEnvFrom }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+
+        {{- with .Values.securityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+
+        volumeMounts:
+          - name: django-settings
+            mountPath: /app/bctf/helm_settings.py
+            subPath: helm_settings.py
+            readOnly: true
+          - name: workdir
+            mountPath: /workdir
+          {{- with .Values.volumeMounts }}
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+      volumes:
+        - name: django-settings
+          configMap:
+            name: {{ include "beavercds-frontend.fullname" . }}-django-settings
+        - name: workdir
+          emptyDir: {}
+        {{- with .Values.volumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
