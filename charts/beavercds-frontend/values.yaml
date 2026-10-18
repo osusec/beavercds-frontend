@@ -60,6 +60,36 @@ database:
   password: ""
   dbname: bctf
 
+# Application secrets (Django SECRET_KEY and CTFtime OAuth app credentials).
+# These are loaded directly as environment variables matching their key names
+# below.
+#
+# Note: BCTF_ALLOWED_HOSTS is not configured here; it is derived automatically
+# from `ingress.hosts` / `httpRoute.hostnames`. The frontend-api auth token is
+# also managed separately, see `apiAuthToken` below.
+appSecrets:
+  # Use an existing secret for these values instead of the generated one
+  # below. This secret must have the following keys: BCTF_SECRET_KEY,
+  # BCTF_ALLOWED_HOSTS, BCTF_CTFTIME_CLIENTID, BCTF_CTFTIME_CLIENTSECRET.
+  existingSecret: ""
+
+  # Django secret key. Leave blank to autogenerate one on install.
+  secretKey: ""
+  # CTFtime OAuth app credentials. Leave blank to disable CTFtime login.
+  ctftimeClientId: ""
+  ctftimeClientSecret: ""
+
+# Auth token used by the frontend-api service. Kept in its own Secret (rather
+# than alongside `appSecrets`) since this is a value that external callers
+# need to be given; see the post-install NOTES for how to fetch it.
+apiAuthToken:
+  # Use an existing secret for the token instead of the generated one below.
+  # This secret must have a `BCTF_API_AUTHTOKEN` key.
+  existingSecret: ""
+
+  # Leave blank to autogenerate one on install.
+  value: ""
+
 # Deployment/Pod settings
 # scoreboard:
 replicaCount: 1
@@ -153,6 +183,15 @@ volumeMounts: []
   # - name: foo
   #   mountPath: "/etc/foo"
   #   readOnly: true
+
+# Additional envFrom entries added to all chart containers (and the
+# wait-for-postgres init container), Use this to inject your own
+# ConfigMaps/Secrets as environment variables.
+extraEnvFrom: []
+  # - secretRef:
+  #     name: my-extra-secret
+  # - configMapRef:
+  #     name: my-extra-configmap
 
 nodeSelector: {}
 

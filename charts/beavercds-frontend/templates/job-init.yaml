@@ -39,7 +39,14 @@ spec:
         command: ["python3", "manage.py", "ensureadmin"]
 
         env:
+          {{- include "beavercds-frontend.allowedHostsEnv" . | nindent 10 }}
           {{- include "beavercds-frontend.dbEnv" . | nindent 10 }}
+
+        envFrom:
+          {{- include "beavercds-frontend.appEnvFrom" . | nindent 10 }}
+          {{- with .Values.extraEnvFrom }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
 
         {{- with .Values.securityContext }}
         securityContext:

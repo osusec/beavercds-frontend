@@ -1,4 +1,6 @@
-1. Get the application URL by running these commands:
+BeaverCDS Frontend is now deployed!
+
+1. Visit the scoreboard:
 {{- if .Values.httpRoute.enabled }}
 {{- if .Values.httpRoute.hostnames }}
     export APP_HOSTNAME={{ .Values.httpRoute.hostnames | first }}
@@ -31,3 +33,11 @@
   echo "Visit http://127.0.0.1:8080 to use your application"
   kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 8080:$CONTAINER_PORT
 {{- end }}
+
+2. Fetch the created administrator team login credentials:
+		kubectl get secret --namespace {{ .Release.Namespace }} {{ include "beavercds-frontend.fullname" . }}-admin-credentials -o jsonpath="Username: {.data.DJANGO_ADMIN_USERNAME}{'\n'}Password: {.data.DJANGO_ADMIN_PASSWORD}{'\n'}" | base64 -d; echo
+
+
+
+2. Fetch the frontend-api auth token to use with beavercds-backend:
+    kubectl get secret --namespace {{ .Release.Namespace }} {{ include "beavercds-frontend.apiAuthTokenSecretName" . }} -o jsonpath="{.data.BCTF_API_AUTHTOKEN}" | base64 -d; echo

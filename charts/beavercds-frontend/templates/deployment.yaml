@@ -57,7 +57,14 @@ spec:
               value: bctf
             - name: PORT
               value: '8000'
+            {{- include "beavercds-frontend.allowedHostsEnv" . | nindent 12 }}
             {{- include "beavercds-frontend.dbEnv" . | nindent 12 }}
+
+          envFrom:
+            {{- include "beavercds-frontend.appEnvFrom" . | nindent 12 }}
+            {{- with .Values.extraEnvFrom }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
 
           ports:
             - name: frontend
@@ -102,7 +109,14 @@ spec:
               value: bctf-api
             - name: PORT
               value: '8001'
+            {{- include "beavercds-frontend.allowedHostsEnv" . | nindent 12 }}
             {{- include "beavercds-frontend.dbEnv" . | nindent 12 }}
+
+          envFrom:
+            {{- include "beavercds-frontend.appEnvFrom" . | nindent 12 }}
+            {{- with .Values.extraEnvFrom }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
 
           ports:
             - name: frontend-api
