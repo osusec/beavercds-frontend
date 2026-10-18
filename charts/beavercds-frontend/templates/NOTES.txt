@@ -14,9 +14,7 @@
 {{- end }}
 {{- else if .Values.ingress.enabled }}
 {{- range $host := .Values.ingress.hosts }}
-  {{- range .paths }}
-  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
-  {{- end }}
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host }}
 {{- end }}
 {{- else if contains "NodePort" .Values.service.type }}
   export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "beavercds-frontend.fullname" . }})

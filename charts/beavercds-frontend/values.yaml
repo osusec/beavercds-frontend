@@ -92,9 +92,10 @@ ingress:
   annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
+  # Note! This is directly an array of hostnames. We do not expose custom path
+  # conditions.
   hosts:
     - scoreboard.beavercds.example
-    # we do not expose custom path conditions
   tls: []
     # - secretName: chart-example-tls
     #   hosts:
