@@ -6,7 +6,7 @@ metadata:
     {{- include "beavercds-frontend.labels" . | nindent 4 }}
   annotations:
     "helm.sh/hook": pre-install,pre-upgrade
-    "helm.sh/hook-weight": "2"
+    "helm.sh/hook-weight": "1"
 spec:
   backoffLimit: 1
   template:
@@ -34,7 +34,18 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
 
-        command: ["python3", "manage.py", "lockedmigrate", "--noinput"]
+        # account/chals migrations aren't vendored into the repo. To stay
+        # durable as new apps/migration dirs are added, copy the whole app
+        # tree into a writable emptyDir and generate+apply migrations from
+        # there, rather than mounting individual migrations directories.
+        command: ["sh", "-c"]
+        args:
+          - |
+            set -e
+            cp -a /app/. /workdir/
+            cd /workdir
+            python3 manage.py makemigrations --noinput
+            python3 manage.py lockedmigrate --noinput
 
         env:
           {{- include "beavercds-frontend.allowedHostsEnv" . | nindent 10 }}
@@ -56,6 +67,8 @@ spec:
             mountPath: /app/bctf/helm_settings.py
             subPath: helm_settings.py
             readOnly: true
+          - name: workdir
+            mountPath: /workdir
           {{- with .Values.volumeMounts }}
           {{- toYaml . | nindent 12 }}
           {{- end }}
@@ -64,6 +77,8 @@ spec:
         - name: django-settings
           configMap:
             name: {{ include "beavercds-frontend.fullname" . }}-django-settings
+        - name: workdir
+          emptyDir: {}
         {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
