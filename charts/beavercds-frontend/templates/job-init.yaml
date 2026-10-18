@@ -1,3 +1,4 @@
+{{- if .Values.adminUser.create }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -36,7 +37,29 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
 
-        command: ["python3", "manage.py", "ensureadmin"]
+        # Manually replicate the idempotent `ensureadmin` command from
+        # django-kubernetes. We are using a custom User model that doesn't define
+        # EMAIL_FIELD, and this breaks the command as it expects that field to be present.
+        # Once upstream fixes this, this can go back to using `ensureadmin`.
+        #
+        # Upstream issue:
+        # https://github.com/rotationalio/django-kubernetes/issues/13
+        # command: ["python3", "manage.py", "ensureadmin"]
+        command: ["python3", "manage.py", "shell", "-c"]
+        args:
+          - |
+            import os
+            from django.contrib.auth import get_user_model
+
+            User = get_user_model()
+            username = os.environ["DJANGO_ADMIN_USERNAME"]
+            password = os.environ["DJANGO_ADMIN_PASSWORD"]
+
+            if User.objects.filter(**{User.USERNAME_FIELD: username}).exists():
+                print(f"admin user {username!r} already exists, skipping creation")
+            else:
+                User.objects.create_superuser(username, password)
+                print(f"created admin user {username!r}")
 
         env:
           {{- include "beavercds-frontend.allowedHostsEnv" . | nindent 10 }}
@@ -44,6 +67,8 @@ spec:
 
         envFrom:
           {{- include "beavercds-frontend.appEnvFrom" . | nindent 10 }}
+          - secretRef:
+              name: {{ include "beavercds-frontend.adminSecretName" . | quote }}
           {{- with .Values.extraEnvFrom }}
           {{- toYaml . | nindent 10 }}
           {{- end }}
@@ -82,3 +107,4 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+{{- end }}
