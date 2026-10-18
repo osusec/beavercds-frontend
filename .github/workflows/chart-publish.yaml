@@ -29,7 +29,7 @@ jobs:
           persist-credentials: false
 
       - name: Lint chart
-        run: helm lint ${{ env.CHART_DIR }}
+        run: helm lint ${CHART_DIR}
 
       - name: Determine chart version
         id: version
@@ -45,7 +45,7 @@ jobs:
           fi
 
       - name: Package chart
-        run: helm package ${{ env.CHART_DIR }} ${STEPS_VERSION_OUTPUTS_ARGS} --destination dist
+        run: helm package ${CHART_DIR} ${STEPS_VERSION_OUTPUTS_ARGS} --destination dist
         env:
           STEPS_VERSION_OUTPUTS_ARGS: ${{ steps.version.outputs.args }}
 
