@@ -2,15 +2,16 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-# Settings to pass as additional config.py
+# Settings to pass as additional config.py. All variables defined in this
+# example are required, but should be edited to match your CTF.
 config: |
   from django.utils.timezone import datetime
 
   CTF_EVENT_NAME = 'My CTF'
 
   # ISO 8601 format, UTC timezone
-  CTF_EVENT_START = datetime.fromisoformat('1979-01-01 00:00:00')
-  CTF_EVENT_END = datetime.fromisoformat('1979-01-03 00:00:00')
+  CTF_EVENT_START = datetime.fromisoformat('2000-01-01 00:00:00')
+  CTF_EVENT_END = datetime.fromisoformat('2000-01-03 00:00:00')
 
   # Social button links
   CTF_CTFTIME_LINK = ''
@@ -75,12 +76,21 @@ fullnameOverride: ""
 
 podAnnotations: {}
 podLabels: {}
-podSecurityContext: {}
-  # fsGroup: 2000
+
+# Passed through to securityContext for all chart pods. Defaults to
+# reasonable least-privilege permissions.
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000 # This is the default non-root user in our release image.
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
 
 serviceAccount:
   create: true
-  name: ""
+  name: beavercds-frontend
 
 service:
   type: ClusterIP
@@ -117,7 +127,6 @@ httpRoute:
   # we do not expose custom path rules
   # rules:
 
-resources: {}
 
 # This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
 autoscaling:
@@ -127,7 +136,7 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
-# Additional volumes on the output Deployment definition.
+# Additional volumes to add to all deployments.
 volumes: []
   # - name: foo
   #   secret:
