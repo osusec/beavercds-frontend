@@ -57,6 +57,8 @@ spec:
               value: bctf
             - name: PORT
               value: '8000'
+            - name: HOME
+              value: /tmp
             {{- include "beavercds-frontend.allowedHostsEnv" . | nindent 12 }}
             {{- include "beavercds-frontend.dbEnv" . | nindent 12 }}
 
@@ -117,6 +119,8 @@ spec:
               value: bctf-api
             - name: PORT
               value: '8001'
+            - name: HOME
+              value: /tmp
             {{- include "beavercds-frontend.allowedHostsEnv" . | nindent 12 }}
             {{- include "beavercds-frontend.dbEnv" . | nindent 12 }}
 
