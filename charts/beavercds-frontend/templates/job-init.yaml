@@ -21,6 +21,8 @@ spec:
 
       serviceAccountName: {{ include "beavercds-frontend.serviceAccountName" . }}
 
+      restartPolicy: Never
+
       {{- with .Values.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
@@ -38,6 +40,11 @@ spec:
 
         env:
           {{- include "beavercds-frontend.dbEnv" . | nindent 10 }}
+
+        {{- with .Values.securityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
 
         volumeMounts:
           - name: django-settings

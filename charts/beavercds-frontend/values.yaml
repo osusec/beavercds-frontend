@@ -77,11 +77,16 @@ fullnameOverride: ""
 podAnnotations: {}
 podLabels: {}
 
-# Passed through to securityContext for all chart pods. Defaults to
-# reasonable least-privilege permissions.
+# Passed through to the pod-level securityContext for all chart pods.
+# Only pod-level fields are valid here (container-level fields such as
+# `capabilities` or `allowPrivilegeEscalation` go under `securityContext` below).
 podSecurityContext:
   runAsNonRoot: true
   runAsUser: 1000 # This is the default non-root user in our release image.
+
+# Passed through to the container-level securityContext for all chart
+# containers. Defaults to reasonable least-privilege permissions.
+securityContext:
   allowPrivilegeEscalation: false
   readOnlyRootFilesystem: true
   capabilities:

@@ -114,6 +114,11 @@ command: ["python3", "manage.py", "wait4db"]
 env:
   {{- include "beavercds-frontend.dbEnv" . | nindent 2 }}
 
+{{- with $.Values.securityContext }}
+securityContext:
+  {{- toYaml . | nindent 2 }}
+{{- end }}
+
 volumeMounts:
   - name: django-settings
     mountPath: /app/bctf/helm_settings.py
