@@ -50,6 +50,7 @@ app.kubernetes.io/name: {{ include "beavercds-frontend.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
+
 {{/*
 Create the name of the service account to use
 */}}
@@ -105,10 +106,11 @@ envFrom fragment to load application secrets into a container.
 
 {{/*
 Comma-separated list of allowed hostnames for the Django app, derived from the
-Ingress and/or HTTPRoute hostnames (whichever are enabled).
+Ingress and/or HTTPRoute hostnames (whichever are enabled), plus localhost for
+the pod liveness/readiness probes that hit the pod directly.
 */}}
 {{- define "beavercds-frontend.allowedHosts" -}}
-{{- $hosts := list -}}
+{{- $hosts := list "localhost" "127.0.0.1" -}}
 {{- if .Values.ingress.enabled -}}
 {{- $hosts = concat $hosts .Values.ingress.hosts -}}
 {{- end -}}

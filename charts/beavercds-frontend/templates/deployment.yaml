@@ -80,17 +80,25 @@ spec:
           livenessProbe:
             httpGet:
               path: /
-              port: http
+              port: frontend
+              httpHeaders:
+                - name: Host
+                  value: localhost
           readinessProbe:
             httpGet:
               path: /
-              port: http
+              port: frontend
+              httpHeaders:
+                - name: Host
+                  value: localhost
 
           volumeMounts:
             - name: django-settings
               mountPath: /app/bctf/helm_settings.py
               subPath: helm_settings.py
               readOnly: true
+            - name: tmp
+              mountPath: /tmp
             {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
@@ -133,6 +141,8 @@ spec:
               mountPath: /app/bctf/helm_settings.py
               subPath: helm_settings.py
               readOnly: true
+            - name: tmp
+              mountPath: /tmp
             {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
@@ -141,6 +151,8 @@ spec:
         - name: django-settings
           configMap:
             name: {{ include "beavercds-frontend.fullname" . }}-django-settings
+        - name: tmp
+          emptyDir: {}
         {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
