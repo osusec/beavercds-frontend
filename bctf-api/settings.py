@@ -45,6 +45,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "djk8s.middleware.ProbeMiddleware",
     'bctf-api.middleware.AuthorizationTokenMiddleware',
 ]
 
