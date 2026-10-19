@@ -13,6 +13,7 @@ spec:
   selector:
     matchLabels:
       {{- include "beavercds-frontend.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: scoreboard
 
   template:
     metadata:
@@ -22,6 +23,7 @@ spec:
       {{- end }}
       labels:
         {{- include "beavercds-frontend.labels" . | nindent 8 }}
+        app.kubernetes.io/component: scoreboard
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
