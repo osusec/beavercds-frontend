@@ -1,0 +1,156 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: {{ include "beavercds-frontend.fullname" . }}-static
+  labels:
+    {{- include "beavercds-frontend.labels" . | nindent 4 }}
+    app.kubernetes.io/component: static
+
+spec:
+  replicas: {{ .Values.static.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "beavercds-frontend.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: static
+
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "beavercds-frontend.labels" . | nindent 8 }}
+        app.kubernetes.io/component: static
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      # we don't need access to the k8s api
+      automountServiceAccountToken: false
+
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      initContainers:
+        # Copy out static files into shared dir for caddy
+        - name: collectstatic
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+
+          command: ["python3", "manage.py", "collectstatic", "--noinput"]
+
+          # settings.py needs these to import, even though collectstatic does
+          # not touch the database.
+          env:
+            {{- include "beavercds-frontend.allowedHostsEnv" . | nindent 12 }}
+            {{- include "beavercds-frontend.dbEnv" . | nindent 12 }}
+
+          envFrom:
+            {{- include "beavercds-frontend.appEnvFrom" . | nindent 12 }}
+            {{- with .Values.extraEnvFrom }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+          volumeMounts:
+            - name: django-settings
+              mountPath: /app/bctf/helm_settings.py
+              subPath: helm_settings.py
+              readOnly: true
+            # must match STATIC_ROOT in bctf/settings.py
+            - name: static
+              mountPath: /app/staticfiles
+            {{- with .Values.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+
+      containers:
+        # Plain ol' caddy as a static fileserver. The initcontainer has already
+        # copied over things to /srv/static.
+        - name: static
+          image: "{{ .Values.static.image.repository }}:{{ .Values.static.image.tag }}"
+          imagePullPolicy: {{ .Values.static.image.pullPolicy }}
+
+          # Root here is /srv/ not /srv/static/ so that the incoming requests
+          # for `/static/...` paths match without needing to do any path
+          # stripping that requires a Caddyfile.
+          command: ["caddy"]
+          args:
+            - file-server
+            - --root=/srv
+            - --listen=:8080
+            - --access-log
+
+          {{- with .Values.static.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+          # caddy wants writable config/data dirs, but the root fs is read-only
+          env:
+            - name: XDG_CONFIG_HOME
+              value: /tmp/config
+            - name: XDG_DATA_HOME
+              value: /tmp/data
+
+          ports:
+            - name: static
+              containerPort: 8080
+              protocol: TCP
+
+          {{- with .Values.static.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+          livenessProbe:
+            tcpSocket:
+              port: static
+          readinessProbe:
+            tcpSocket:
+              port: static
+
+          volumeMounts:
+            - name: static
+              mountPath: /srv/static
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+
+      volumes:
+        - name: django-settings
+          configMap:
+            name: {{ include "beavercds-frontend.fullname" . }}-django-settings
+        - name: static
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+        {{- with .Values.volumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
