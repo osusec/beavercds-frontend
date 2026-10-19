@@ -99,6 +99,31 @@ image:
   pullPolicy: IfNotPresent
   tag: main # TODO: default to app version when we start cutting releases!
 
+# Static file server settings. This serves all static files for the Django appSecrets
+# i.e. everything known to `collectstatic`.
+static:
+  replicaCount: 1
+
+  image:
+    repository: docker.io/library/caddy
+    pullPolicy: Always
+    tag: 2-alpine
+
+  resources: {}
+
+  # Container-level securityContext for the Caddy container. The official Caddy
+  # binary carries the cap_net_bind_service file capability, which fails to exec
+  # if that capability is dropped, so it is added back here (Caddy itself only
+  # listens on unprivileged port 8080).
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+        - ALL
+      add:
+        - NET_BIND_SERVICE
+
 imagePullSecrets: []
 # This is to override the chart name.
 nameOverride: ""

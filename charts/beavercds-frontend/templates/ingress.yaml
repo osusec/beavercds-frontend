@@ -35,6 +35,13 @@ spec:
                 name: {{ include "beavercds-frontend.fullname" $ }}
                 port:
                   name: frontend
+          - path: /static
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "beavercds-frontend.fullname" $ }}-static
+                port:
+                  name: static
           - path: /api
             pathType: Prefix
             backend:
