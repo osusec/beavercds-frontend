@@ -44,8 +44,8 @@ spec:
         command: ["sh", "-c"]
         args:
           - |
-            set -e
-            cp -a /app/. /workdir/
+            set -ex
+            cp -r /app/. /workdir/
             cd /workdir
             python3 manage.py makemigrations --noinput
             python3 manage.py lockedmigrate --noinput

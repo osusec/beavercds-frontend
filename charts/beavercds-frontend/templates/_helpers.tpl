@@ -7,8 +7,9 @@ Expand the name of the chart.
 
 {{/*
 Create a default fully qualified app name.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
-If release name contains chart name it will be used as a full name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this
+(per the DNS naming spec). If release name contains chart name it will be used
+as a full name.
 */}}
 {{- define "beavercds-frontend.fullname" -}}
 {{- if .Values.fullnameOverride }}
@@ -92,6 +93,20 @@ Name of the Secret containing the initial admin user credentials.
 */}}
 {{- define "beavercds-frontend.adminSecretName" -}}
 {{- printf "%s-admin-credentials" (include "beavercds-frontend.fullname" .) }}
+{{- end }}
+
+{{/*
+Checksum annotation of all configmap/secret configuration used by our
+Deployments. This will change when any values settings are updated or the
+content of any existing secrets specified in the values are updated.
+*/}}
+{{- define "beavercds-frontend.checksumAnnotations" -}}
+checksum/config: {{ include (print $.Template.BasePath "/django-settings-cm.tpl") . | sha256sum }}
+{{ $existing := dict -}}
+{{- range $name := compact (list .Values.appSecrets.existingSecret .Values.apiAuthToken.existingSecret .Values.database.existingSecret) -}}
+{{- $_ := set $existing $name (dig "data" (dict) (lookup "v1" "Secret" $.Release.Namespace $name)) -}}
+{{- end -}}
+checksum/secrets: {{ dict "values" .Values "existing" $existing | toJson | sha256sum }}
 {{- end }}
 
 {{/*
