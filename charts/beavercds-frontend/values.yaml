@@ -26,6 +26,13 @@ config: |
       }
   ]
 
+  CTF_RULES = """
+  # Rules for MyCTF
+
+  1. Foo
+  2. Bar
+  """
+
   # Number of solves required for a challenge to reach its minimum points using
   # dynamic scoring
   THRESHOLD_SOLVES = 20
