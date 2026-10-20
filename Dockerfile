@@ -70,4 +70,5 @@ ENV PORT=${PORT}
 EXPOSE ${PORT}
 
 # Run Gunicorn as the production WSGI server.
-CMD gunicorn "${APP}.wsgi" --bind "0.0.0.0:${PORT}"
+CMD gunicorn "${APP}.wsgi" --bind "0.0.0.0:${PORT}" \
+    --access-logfile '-' --error-logfile '-'
