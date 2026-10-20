@@ -5,8 +5,6 @@
 # Settings to pass as additional config.py. All variables defined in this
 # example are required, but should be edited to match your CTF.
 config: |
-  from django.utils.timezone import datetime
-
   CTF_EVENT_NAME = 'My CTF'
 
   # ISO 8601 format, UTC timezone
