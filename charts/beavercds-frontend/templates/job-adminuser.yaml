@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "beavercds-frontend.fullname" . }}-init-{{ .Release.Revision }}
+  name: {{ include "beavercds-frontend.fullname" . }}-adminuser-{{ .Release.Revision }}
   labels:
     {{- include "beavercds-frontend.labels" . | nindent 4 }}
     app.kubernetes.io/component: init
