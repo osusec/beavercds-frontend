@@ -7,7 +7,7 @@ from bctf.settings import CTF_EVENT_START_PARSED, CTF_EVENT_END_PARSED
 
 class CTFStartMixin:
     def dispatch(self, request, *args, **kwargs):
-        if timezone.now() < CTF_EVENT_START:
+        if timezone.now() < CTF_EVENT_START_PARSED:
             return render(request, 'not_started.html', status=403)
         return super().dispatch(request, *args, **kwargs)
 
@@ -15,7 +15,7 @@ def ctf_start():
     def decorator(view_func):
         @wraps(view_func)
         def wrapper(request, *args, **kwargs):
-            if timezone.now() < CTF_EVENT_START:
+            if timezone.now() < CTF_EVENT_START_PARSED:
                 return render(request, 'not_started.html', status=403)
             return view_func(request, *args, **kwargs)
         return wrapper
