@@ -3,8 +3,8 @@ from django.conf import settings
 def ctf_event (request):
     return {
         "event_name": settings.CTF_EVENT_NAME,
-        "event_start": settings.CTF_EVENT_START,
-        "event_end": settings.CTF_EVENT_END,
+        "event_start": settings.CTF_EVENT_START_PARSED,
+        "event_end": settings.CTF_EVENT_END_PARSED,
         "ctftime_link": settings.CTF_CTFTIME_LINK,
         "gitlab_link": settings.CTF_GITLAB_LINK,
         "discord_link": settings.CTF_DISCORD_LINK,
@@ -13,4 +13,3 @@ def ctf_event (request):
         'sponsors': settings.CTF_SPONSORS,
         "rules_md": settings.CTF_RULES,
     }
-    

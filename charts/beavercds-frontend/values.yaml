@@ -10,8 +10,8 @@ config: |
   CTF_EVENT_NAME = 'My CTF'
 
   # ISO 8601 format, UTC timezone
-  CTF_EVENT_START = datetime.fromisoformat('2000-01-01 00:00:00')
-  CTF_EVENT_END = datetime.fromisoformat('2000-01-03 00:00:00')
+  CTF_EVENT_START = '2000-01-01 00:00:00'
+  CTF_EVENT_END = '2000-01-03 00:00:00'
 
   # Social button links
   CTF_CTFTIME_LINK = ''

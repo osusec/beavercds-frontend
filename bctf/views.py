@@ -8,7 +8,7 @@ from django.db import transaction
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views import View
 import json
-from bctf.settings import THRESHOLD_SOLVES, CTF_EVENT_START
+from bctf.settings import CTF_EVENT_START_PARSED, THRESHOLD_SOLVES
 from chals.mixins import CTFStartMixin
 
 
@@ -115,5 +115,4 @@ class GetChallengeSolves (CTFStartMixin, View):
         all_chals = Challenge.objects.filter(active=True).values('chal_id', 'min_points', 'max_points')
         all_teams = CTFTeam.objects.filter(is_active=True).values('team_name')
 
-        return JsonResponse({'solves': list(all_solves), 'chals': list(all_chals), 'teams': list(all_teams), 'ctf_start_time': CTF_EVENT_START, 'threshold_solves': THRESHOLD_SOLVES})
-
+        return JsonResponse({'solves': list(all_solves), 'chals': list(all_chals), 'teams': list(all_teams), 'ctf_start_time': CTF_EVENT_START_PARSED, 'threshold_solves': THRESHOLD_SOLVES})
