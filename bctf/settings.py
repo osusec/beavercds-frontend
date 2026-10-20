@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 from django.urls import reverse_lazy
-from django.utils import dateparse
+from django.utils import dateparse, timezone
 from django.utils.csp import CSP
 from authlib.integrations.django_client import OAuth
 import environ
@@ -222,11 +222,19 @@ THRESHOLD_SOLVES = 20
 
 from .helm_settings import *
 
-# Parse dates into Django timezone-aware datetimes
-CTF_EVENT_START_PARSED = dateparse.parse_datetime(CTF_EVENT_START)
-CTF_EVENT_END_PARSED = dateparse.parse_datetime(CTF_EVENT_END)
-# Make sure they parsed correctly
-if CTF_EVENT_START_PARSED is None:
-    raise ValueError("Incorrect format for CTF_EVENT_START")
-if CTF_EVENT_END_PARSED is None:
-    raise ValueError("Incorrect format for CTF_EVENT_END")
+
+# Parse dates into Django timezone-aware datetimes.
+# 
+# parse_datetime() returns a naive datetime when the string has no timezone
+# offset (+00:00), in which case add the missing timezone for the user .
+def _parse_aware(name, value):
+    parsed = dateparse.parse_datetime(value)
+    if parsed is None:
+        raise ValueError(f"Incorrect format for {name}")
+    if timezone.is_naive(parsed):
+        parsed = parsed.replace(tzinfo=timezone.UTC)
+    return parsed
+
+
+CTF_EVENT_START_PARSED = _parse_aware("CTF_EVENT_START", CTF_EVENT_START)
+CTF_EVENT_END_PARSED = _parse_aware("CTF_EVENT_END", CTF_EVENT_END)
