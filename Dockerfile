@@ -72,4 +72,5 @@ EXPOSE ${PORT}
 # Run Gunicorn as the production WSGI server.
 CMD gunicorn "${APP}.wsgi" --bind "0.0.0.0:${PORT}" \
     --access-logfile '-' --error-logfile '-' \
-    --proxy-protocol auto
+    --proxy-protocol auto \
+    --access-logformat '%(h)s %({x-real-ip}i)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"'
