@@ -84,14 +84,14 @@ spec:
           # initial basic probes against the frontpage
           livenessProbe:
             httpGet:
-              path: /
+              path: /livez
               port: frontend
               httpHeaders:
                 - name: Host
                   value: localhost
           readinessProbe:
             httpGet:
-              path: /
+              path: /readyz
               port: frontend
               httpHeaders:
                 - name: Host
