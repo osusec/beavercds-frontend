@@ -62,19 +62,13 @@ MIDDLEWARE = [
 
 AUTH_USER_MODEL = "account.CTFTeam"
 
-AUTHENTICATION_BACKENDS = [
-    "django.contrib.auth.backends.ModelBackend",
-    "account.backends.CTFTime_OAuth_Backend",
-    "account.backends.Token_Backend"
-]
-
 LOGIN_URL = reverse_lazy('login')
 LOGIN_REDIRECT_URL = reverse_lazy('profile-home')
 LOGOUT_REDIRECT_URL = '/'
 
 
-CTFTIME_OAUTH_CLIENTID = env.str('BCTF_CTFTIME_CLIENTID')
-CTFTIME_OAUTH_CLIENTSECRET = env.str('BCTF_CTFTIME_CLIENTSECRET')
+CTFTIME_OAUTH_CLIENTID = env.str('BCTF_CTFTIME_CLIENTID', default='')
+CTFTIME_OAUTH_CLIENTSECRET = env.str('BCTF_CTFTIME_CLIENTSECRET', default='')
 OAUTH = OAuth()
 OAUTH.register(
     name='ctftime',
@@ -88,6 +82,14 @@ OAUTH.register(
     client_kwargs={'scope': 'profile team'},
     token_endpoint_auth_method='client_secret_post'
 )
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "account.backends.Token_Backend",
+    # "account.backends.CTFTime_OAuth_Backend",
+]
+if CTFTIME_OAUTH_CLIENTID:
+    AUTHENTICATION_BACKENDS.append("account.backends.CTFTime_OAuth_Backend")
 
 SECURE_CSP = {
     "default-src": [CSP.NONE],

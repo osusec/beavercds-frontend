@@ -12,4 +12,5 @@ def ctf_event (request):
         "bluesky_link": settings.CTF_BSKY_LINK,
         'sponsors': settings.CTF_SPONSORS,
         "rules_md": settings.CTF_RULES,
+        "ctftime_oauth_allowed": True if settings.CTFTIME_OAUTH_CLIENTID else False,
     }
