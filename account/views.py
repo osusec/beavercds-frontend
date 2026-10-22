@@ -10,6 +10,7 @@ from django.db import IntegrityError
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
 from django.contrib.auth.hashers import make_password, check_password
+from .mixins import CTFTimeOAuthMixin
 
 from bctf.settings import OAUTH, LOGIN_REDIRECT_URL, TOKEN_LENGTH
 
@@ -50,13 +51,13 @@ class ProfilePage (LoginRequiredMixin, View):
         return render (request, "registration/profile.html", {'access_tokens': access_tokens, 'contact_emails': contact_emails, 'solves': solves, 'brackets': brackets})
 
 
-class OAuth_Step1 (View):
+class OAuth_Step1 (CTFTimeOAuthMixin, View):
     def get (self, request):
         redirect_uri = request.build_absolute_uri(reverse_lazy('oauth-step2'))
         return OAUTH.ctftime.authorize_redirect(request, redirect_uri)
 
 
-class OAuth_Step2 (View):
+class OAuth_Step2 (CTFTimeOAuthMixin, View):
     def get (self, request):
         authed_team = authenticate(request)
         
