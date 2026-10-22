@@ -35,6 +35,27 @@ ALLOWED_HOSTS = env.list('BCTF_ALLOWED_HOSTS')
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters":{
+            "simple": {
+            "format": "{levelname} {asctime} PID:{process:d} Thread:{thread:d}\n{message}",
+            "style": "{"
+            
+        }
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "simple"
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    }
+}
 
 # Application definition
 
