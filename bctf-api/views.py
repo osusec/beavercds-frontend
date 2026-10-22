@@ -74,7 +74,7 @@ class ResolveState(View):
                         chal_file = ChallengeFile(
                             challenge=chal,
                             url=file,
-                            basename=file.split('/')[-1]
+                            basename=_basename(file)
                         )
                         chal_file.save()
                     result_state.append(chal_id)
@@ -102,8 +102,7 @@ class ResolveState(View):
                         chal_file = ChallengeFile(
                             challenge=chal,
                             url=file,
-                            # TODO: brittle
-                            basename=file.split('/')[-1]
+                            basename=_basename(file)
                         )
                         chal_file.save()
                     result_state.append(chal_id)
@@ -252,3 +251,12 @@ def _check_complete_bracket_fields (new_bracket_state):
             # Missing required fields, fail
             return False
     return True
+
+def _basename (url):
+    # Remove query params
+    result = url.split('?')[0]
+    # Remove any trailing slashes
+    result = result.rstrip('/')
+    # Isolate the last part of the path
+    result = result.split('/')[-1]
+    return result
