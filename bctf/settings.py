@@ -39,10 +39,9 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters":{
-            "simple": {
+        "simple": {
             "format": "{levelname} {asctime} PID:{process:d} Thread:{thread:d}\n{message}",
             "style": "{"
-            
         }
     },
     "handlers": {
