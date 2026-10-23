@@ -99,7 +99,7 @@ SECURE_CSP = {
     "font-src": [CSP.SELF, "https://fonts.gstatic.com", "https://cdn.jsdelivr.net"],
     "base-uri": [CSP.SELF],
     "form-action": [CSP.SELF],
-    "connect-src": [CSP.SELF],
+    "connect-src": [CSP.SELF, "https://cdnjs.cloudflare.com", "https://cdn.jsdelivr.net", "https://fonts.googleapis.com", "https://fonts.gstatic.com"],
     "frame-ancestors": [CSP.NONE],
 }
 
